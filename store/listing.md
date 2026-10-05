@@ -51,7 +51,10 @@ Necessária para injetar o script de captura (content/content.js) na aba ativa s
 **URL da política de privacidade:**
 https://github.com/lucienkaua/scroll-driving-scrapper/blob/main/store/privacy-policy.md
 
-## Assets
-- Screenshots 1280×800: `store/screenshots/01-hero.png`, `store/screenshots/02-fluxo.png`
+## Assets (todos JPEG — o formulário exige 24 bits sem alfa)
+- Screenshots 1280×800: `store/screenshots/01-hero.jpg`, `store/screenshots/02-fluxo.jpg`
+- Bloco promocional pequeno 440×280: `store/promo-small-440x280.jpg`
+- Bloco promocional de letreiro 1400×560: `store/promo-marquee-1400x560.jpg`
 - Ícone da loja 128×128: `icons/icon128.png`
 - Zip de distribuição: gerar com `powershell -File tools/make-store-zip.ps1` → `store/sfx-clone-<versão>.zip`
+- Regenerar imagens: `node tools/shot-popup.mjs && node tools/make-store-assets.mjs`
