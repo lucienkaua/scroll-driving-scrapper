@@ -25,7 +25,7 @@ Extensão de Chrome (Manifest V3) que **clona as animações de rolagem de qualq
 
 ## Instalação
 
-**Chrome Web Store**: em breve — pacote de publicação pronto em [`store/`](store/).
+**Chrome Web Store**: em revisão (enviada em 2026-10-05) — link de instalação em breve. Materiais de publicação em [`store/`](store/).
 
 Manual (modo desenvolvedor):
 1. `chrome://extensions` → ativar **Modo do desenvolvedor**
@@ -84,7 +84,7 @@ Guia passo a passo com os 3 sites de referência e o que observar em cada um: [d
 2. ~~Modo viewport-relativo~~ — **feito na v1.3** (`mode: "pixel" | "fraction"` no runtime).
 3. ~~Seletores resistentes a build~~ — **feito na v1.5** (classes de CSS Modules/styled-components/emotion/svelte são ignoradas na montagem do seletor; a verificação de unicidade compensa com mais profundidade/`nth-of-type`).
 4. ~~Ícones da extensão~~ — **feito na v1.7** (SVG fonte em `icons/icon.svg`, PNGs gerados por `tools/make-icons.mjs`).
-5. **Publicação na Chrome Web Store** — materiais prontos em [`store/`](store/) (listagem, screenshots, política de privacidade, justificativas de permissão e zip de distribuição via `tools/make-store-zip.ps1`).
+5. ~~Publicação na Chrome Web Store~~ — **enviada para revisão em 2026-10-05** (v1.9.0, publicação automática após aprovação). Materiais em [`store/`](store/).
 
 ---
 
