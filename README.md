@@ -26,6 +26,8 @@ Extensão de Chrome (Manifest V3) que **clona as animações de rolagem de qualq
 2. **Carregar sem compactação** → selecionar esta pasta
 3. Abrir o site alvo → clicar no ícone → **Capturar rolagem**
 
+Privacidade: nada roda em segundo plano — o capturador só é injetado na aba ativa quando você clica no ícone (`activeTab` + `scripting`), sempre na versão atual da extensão.
+
 O `content/content.js` também funciona colado direto no Console do DevTools (sem extensão): expõe `SFXCapture.startSample()`, `SFXCapture.extractNative()` e `SFXCapture.detectStack()`.
 
 ## Usando o bundle
@@ -74,4 +76,5 @@ Guia passo a passo com os 3 sites de referência e o que observar em cada um: [d
 
 1. **Elementos pinados**: capturar também `position/top/width/height` de seções *pinned* (ScrollTrigger com `pin: true` fixa o elemento via wrapper + estilos inline — hoje o pin em si escapa da captura, só os transforms internos entram).
 2. **Modo viewport-relativo no runtime**: os keyframes são indexados pelo progresso global da página de origem; uma opção de mapear por seção/elemento (estilo `view()`) faria o bundle se adaptar a páginas com altura diferente da original.
-3. **Ícones da extensão** (16/48/128) e publicação na Chrome Web Store.
+3. **Seletores resistentes a build**: ignorar classes hasheadas de bundlers (ex.: `anton_a8b17dcd-module__...` de CSS Modules/Next.js) ao montar seletores — hoje elas entram e quebram quando o site faz novo deploy.
+4. **Ícones da extensão** (16/48/128) e publicação na Chrome Web Store.

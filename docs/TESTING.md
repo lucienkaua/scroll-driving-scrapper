@@ -1,4 +1,4 @@
-# Guia de teste manual — SFX Clone v1.1
+# Guia de teste manual — SFX Clone v1.2
 
 ## Preparação (1 minuto)
 
@@ -6,7 +6,7 @@
 2. **Carregar sem compactação** → selecionar a pasta do projeto
 3. Fixar o ícone da extensão na barra (puzzle → pin)
 
-> Se a extensão foi instalada/recarregada com abas já abertas, dê **F5 na aba alvo** antes de capturar — o content script só injeta no carregamento da página.
+> Desde a v1.2 o capturador é injetado na hora do clique (`activeTab` + `scripting`) — funciona em abas já abertas, sem F5, e sempre na versão atual. Se recarregar a extensão em `chrome://extensions`, feche e reabra o popup.
 
 ## Roteiro por site
 

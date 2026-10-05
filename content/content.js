@@ -1,6 +1,9 @@
-/* SFX Clone - capturador. Roda como content script ou colado no Console do DevTools. */
+/* SFX Clone - capturador. Injetado pelo popup (chrome.scripting) ou colado no Console. */
 (function () {
   "use strict";
+  // o popup injeta a cada abertura - evita listeners duplicados
+  if (globalThis.__SFX_CS__) return;
+  globalThis.__SFX_CS__ = "1.2.0";
   var MAX_ELS = 300;    // alvos animados acompanhados na gravação
   var MAX_SCAN = 4000;  // elementos inspecionados na varredura
   var SCAN_STOPS = 13;  // paradas da varredura rápida (0..1)

@@ -5,71 +5,127 @@
 <style>
   :root {
     --bg: #191815;
+    --bg-top: #221f1a;
     --panel: #211f1b;
+    --panel-2: #272420;
     --line: #35322b;
+    --line-2: #514c40;
     --ink: #ede9e0;
     --muted: #9a947f;
     --rec: #f5483e;
-    --rec-ink: #ffd9d6;
+    --rec-soft: rgba(245, 72, 62, .16);
     --mono: "Cascadia Code", ui-monospace, Consolas, monospace;
   }
   * { box-sizing: border-box; }
   body {
     width: 340px; margin: 0; padding: 14px;
-    background: var(--bg); color: var(--ink);
+    background: radial-gradient(130% 70% at 50% -16%, var(--bg-top), transparent 62%), var(--bg);
+    color: var(--ink);
     font: 13px/1.45 "Segoe UI", system-ui, sans-serif;
   }
+
   header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--rec); flex: none; }
-  .dot.live { animation: pulse 1.1s ease-in-out infinite; }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--rec); flex: none;
+    box-shadow: 0 0 6px var(--rec-soft);
+  }
+  .dot.live { animation: pulse 1.1s ease-in-out infinite; box-shadow: 0 0 10px var(--rec); }
   @keyframes pulse { 50% { opacity: .25; } }
-  @media (prefers-reduced-motion: reduce) { .dot.live { animation: none; } }
   h1 { font: 700 12px var(--mono); letter-spacing: .18em; margin: 0; flex: 1; }
-  .ver { font: 10px var(--mono); color: var(--muted); }
+  .ver {
+    font: 10px var(--mono); color: var(--muted);
+    border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px;
+  }
 
   #stack { display: flex; flex-wrap: wrap; gap: 4px; min-height: 18px; margin-bottom: 10px; }
   #stack span {
     font: 9px var(--mono); letter-spacing: .06em; text-transform: uppercase;
-    color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 2px 6px;
+    color: var(--muted); background: var(--panel);
+    border: 1px solid var(--line); border-radius: 4px; padding: 2px 7px;
+    animation: badge-in .25s ease backwards;
+    animation-delay: calc(var(--i, 0) * 45ms);
+    transition: color .12s ease, border-color .12s ease, transform .12s ease;
   }
+  #stack span:hover { color: var(--ink); border-color: var(--line-2); transform: translateY(-1px); }
+  @keyframes badge-in { from { opacity: 0; transform: translateY(4px); } }
 
   .row { display: flex; gap: 6px; margin-bottom: 8px; }
   button, select {
     font: 12px var(--mono); color: var(--ink);
-    background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
-    padding: 8px 10px; cursor: pointer;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 7px;
+    padding: 9px 10px; cursor: pointer;
+    transition: transform .13s ease, border-color .13s ease, box-shadow .13s ease,
+                filter .13s ease, background .13s ease;
   }
-  button:hover { border-color: var(--muted); }
+  button:hover:not(:disabled), select:hover:not(:disabled) {
+    border-color: var(--line-2); background: var(--panel-2); transform: translateY(-1px);
+  }
+  button:active:not(:disabled) { transform: translateY(0) scale(.98); transition-duration: .08s; }
   button:focus-visible, select:focus-visible { outline: 2px solid var(--rec); outline-offset: 1px; }
   button:disabled { opacity: .45; cursor: default; }
-  #sample { flex: 1; background: var(--rec); border-color: var(--rec); color: #fff; font-weight: 600; }
-  #sample:hover:not(:disabled) { filter: brightness(1.08); }
+  button svg { width: 12px; height: 12px; flex: none; }
+
+  #sample {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: var(--rec); border-color: var(--rec); color: #fff; font-weight: 600;
+  }
+  #sample:hover:not(:disabled) {
+    background: var(--rec); border-color: var(--rec);
+    filter: brightness(1.1); box-shadow: 0 4px 18px var(--rec-soft);
+  }
+  #sampleDot { width: 8px; height: 8px; border-radius: 50%; background: #fff; flex: none; }
+  #sample.busy #sampleDot { animation: pulse 1.1s ease-in-out infinite; }
   #css { flex: 1; }
   #dur { width: 62px; text-align: center; }
 
-  #ruler { display: block; width: 100%; height: 30px; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; margin-bottom: 6px; }
+  .ruler-wrap { position: relative; margin-bottom: 6px; }
+  #ruler {
+    display: block; width: 100%; height: 34px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 7px;
+    transition: border-color .13s ease;
+  }
+  .ruler-wrap:hover #ruler { border-color: var(--line-2); }
+  .ruler-label {
+    position: absolute; right: 7px; top: 5px;
+    font: 9px var(--mono); letter-spacing: .08em; color: var(--muted);
+    text-transform: uppercase; pointer-events: none;
+  }
+  .ruler-label.rec { color: var(--rec); }
+
   #status { font: 11px var(--mono); color: var(--muted); min-height: 30px; margin: 0 0 8px; }
   #status b { color: var(--ink); font-weight: 600; }
 
   textarea {
     width: 100%; height: 150px; resize: vertical;
     font: 10.5px/1.4 var(--mono); color: var(--ink);
-    background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 8px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 7px; padding: 8px;
+    transition: border-color .13s ease;
   }
+  textarea:hover { border-color: var(--line-2); }
   textarea:focus-visible { outline: 2px solid var(--rec); outline-offset: 1px; }
+  textarea::-webkit-scrollbar { width: 10px; }
+  textarea::-webkit-scrollbar-thumb { background: var(--line); border-radius: 5px; }
+  textarea::-webkit-scrollbar-thumb:hover { background: var(--line-2); }
+
   footer { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+  footer button { display: flex; align-items: center; gap: 6px; }
+  #copy.ok { color: var(--rec); border-color: var(--rec); }
   #size { margin-left: auto; font: 10px var(--mono); color: var(--muted); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
 </style>
 </head>
 <body>
   <header>
     <div class="dot" id="dot"></div>
     <h1>SFX CLONE</h1>
-    <span class="ver">v1.1</span>
+    <span class="ver">v1.2</span>
   </header>
   <div id="stack" title="Bibliotecas detectadas na página"></div>
   <div class="row">
-    <button id="sample">&#9679; Capturar rolagem</button>
+    <button id="sample"><span id="sampleDot"></span><span id="sampleLabel">Capturar rolagem</span></button>
     <select id="dur" title="Duração da gravação">
       <option value="4000">4s</option>
       <option value="8000" selected>8s</option>
@@ -79,12 +135,15 @@
   <div class="row">
     <button id="css">Extrair CSS nativo (scroll-timeline)</button>
   </div>
-  <canvas id="ruler" width="312" height="30"></canvas>
+  <div class="ruler-wrap">
+    <canvas id="ruler" width="312" height="34"></canvas>
+    <span class="ruler-label" id="rulerLabel">timeline</span>
+  </div>
   <p id="status">Abra a página alvo e clique em <b>Capturar rolagem</b>.</p>
   <textarea id="out" readonly spellcheck="false" placeholder="O bundle .js aparece aqui depois da captura."></textarea>
   <footer>
-    <button id="copy">Copiar</button>
-    <button id="dl">Baixar scrollfx.bundle.js</button>
+    <button id="copy"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="9" height="9" rx="1.5"/><path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5"/></svg><span id="copyLabel">Copiar</span></button>
+    <button id="dl"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v8m0 0 3-3M8 10 5 7"/><path d="M2 11v1.5A1.5 1.5 0 0 0 3.5 14h9a1.5 1.5 0 0 0 1.5-1.5V11"/></svg>Baixar .js</button>
     <span id="size"></span>
   </footer>
 <script src="popup.js"></script>
