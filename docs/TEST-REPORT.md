@@ -69,6 +69,19 @@ Hipótese testada: "gravar por mais tempo melhora o resultado". Medição com o 
 
 **Conclusão**: efeitos *scrubbed* são determinísticos — tempo extra não muda nada; animações **por tempo de parede** (marquees, carrosséis) acumulam ciclos "assados" nos keyframes em capturas longas — mais ruído e mais bytes. O que importa é a **velocidade de scroll (px/s)**, que depende da altura da página. Resultado: duração **Auto** (~1200 px/s, limitada a [8s, 35s], calculada após a varredura com lazy-load carregado) virou o padrão; opções manuais 12/20/35s.
 
+## v1.6 — downsample adaptativo por propriedade (2026-10-05)
+
+Caso real encontrado em teste manual: bundle do lenis.dev com **647 KB / 4.716 keyframes** — o smooth scrolling do Lenis muda transforms a cada frame e a tolerância absoluta (0.75px) não podava nada numa galeria que anda 6.700px. Correção: tolerância **por propriedade** = max(piso absoluto, **0.5% da amplitude daquela propriedade na track**). Transform gigante poda agressivo; opacity/pin/rotações sutis mantêm precisão fina mesmo convivendo na mesma track (um key só é removido se TODAS as propriedades ficam dentro da sua própria tolerância).
+
+| Cenário | Antes | Depois |
+|---|---|---|
+| lenis @ 25s (o caso dos 647 KB) | 4.716 keys / 647 KB (real do usuário) | **201 keys / 35 KB**, fidelidade 0.933 |
+| lenis @ 12s | 1.128 keys / 161 KB / fid. 0.891 | **128 keys / 25 KB / fid. 0.966** |
+| gsap.com @ 12s | 895 keys / 143 KB / fid. 0.648 | **606 keys / 98 KB / fid. 0.679** |
+| sda.style / demo | — | inalterados (sem regressão) |
+
+A fidelidade *sobe* junto com a poda: o ruído de amortecimento baked vira reta — que é o comportamento correto do efeito.
+
 ## Bug encontrado pelo harness no próprio projeto
 
 O `demo/demo.html` original usava `section { overflow: hidden }` — que cria um *scroll container* e sequestra a `view()` timeline do parallax (progresso fixo em 50%; o efeito nunca funcionou em navegador nenhum). Corrigido para `overflow: clip`. Nota do demo após o fix: 8.1.

@@ -77,24 +77,28 @@
     });
     return o;
   }
-  // distancia entre dois snapshots (numerico em transform/opacity, tokens nas strings)
+  // distancia de UMA propriedade (numerica em transform/opacity, tokens nas strings)
+  function propDist(p, av, bv) {
+    if (av == null || bv == null) return 0;
+    var d = 0, i;
+    if (p === "transform") {
+      for (i = 0; i < 6; i++) d += Math.abs(av[i] - (bv[i] != null ? bv[i] : av[i]));
+      return d;
+    }
+    if (p === "opacity") return Math.abs(av - bv) * 10;
+    var A = tokenize(av), B = tokenize(bv);
+    if (A.length !== B.length) return A.length + B.length;
+    for (i = 0; i < A.length; i++) {
+      var na = parseFloat(A[i]), nb = parseFloat(B[i]);
+      if (!isNaN(na) && !isNaN(nb)) d += Math.abs(na - nb);
+      else if (A[i] !== B[i]) d += 1;
+    }
+    return d;
+  }
+  // distancia entre dois snapshots (soma das propriedades)
   function styleDist(a, b) {
     var d = 0;
-    PROPS.forEach(function (p) {
-      var av = a[p], bv = b[p];
-      if (av == null || bv == null) return;
-      if (p === "transform") { for (var i = 0; i < 6; i++) d += Math.abs(av[i] - (bv[i] != null ? bv[i] : av[i])); }
-      else if (p === "opacity") d += Math.abs(av - bv) * 10;
-      else {
-        var A = tokenize(av), B = tokenize(bv);
-        if (A.length !== B.length) { d += A.length + B.length; return; }
-        for (var j = 0; j < A.length; j++) {
-          var na = parseFloat(A[j]), nb = parseFloat(B[j]);
-          if (!isNaN(na) && !isNaN(nb)) d += Math.abs(na - nb);
-          else if (A[j] !== B[j]) d += 1;
-        }
-      }
-    });
+    PROPS.forEach(function (p) { d += propDist(p, a[p], b[p]); });
     return d;
   }
   function interpStyle(a, b, t) {
@@ -117,9 +121,20 @@
     });
     return out;
   }
-  // remove pontos internos que caem (quase) na reta entre os vizinhos
-  function downsample(keys, tol) {
-    tol = tol == null ? 0.75 : tol;
+  // remove pontos internos que caem (quase) na reta entre os vizinhos.
+  // Tolerancia ADAPTATIVA por propriedade: 0.5% da amplitude daquela
+  // propriedade na track, com piso absoluto. Um transform que anda milhares
+  // de px poda agressivo (desvio de 0.5% e invisivel); opacity/pin/rotacoes
+  // sutis mantem precisao fina - mesmo quando convivem na mesma track.
+  function downsample(keys) {
+    if (keys.length <= 2) return keys;
+    var tol = {};
+    PROPS.forEach(function (p) {
+      var amp = 0;
+      for (var i = 1; i < keys.length; i++)
+        amp = Math.max(amp, propDist(p, keys[0].s[p], keys[i].s[p]));
+      tol[p] = Math.max(p === "opacity" ? 0.3 : 0.75, amp * 0.005);
+    });
     var ks = keys.slice();
     var changed = true;
     while (changed && ks.length > 2) {
@@ -127,9 +142,12 @@
       for (var i = 1; i < ks.length - 1; i++) {
         var p0 = ks[i - 1].p, p1 = ks[i + 1].p, p = ks[i].p;
         var t = (p - p0) / ((p1 - p0) || 1);
-        if (styleDist(ks[i].s, interpStyle(ks[i - 1].s, ks[i + 1].s, t)) < tol) {
-          ks.splice(i, 1); changed = true; break;
-        }
+        var interp = interpStyle(ks[i - 1].s, ks[i + 1].s, t);
+        var real = ks[i].s;
+        var ok = PROPS.every(function (prop) {
+          return propDist(prop, real[prop], interp[prop]) <= tol[prop];
+        });
+        if (ok) { ks.splice(i, 1); changed = true; break; }
       }
     }
     return ks;

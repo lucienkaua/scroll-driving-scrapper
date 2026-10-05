@@ -14,7 +14,7 @@ Extensão de Chrome (Manifest V3) que **clona as animações de rolagem de qualq
 └──────────────────────────┘   └──────────────────────┘   └──────────────────────┘
 ```
 
-- **Captura em 2 fases**: uma varredura rápida descobre *quais* elementos mudam com o scroll; a gravação contínua acompanha só esses (até 300), com keyframes indexados pelo progresso real de scroll e simplificados por downsampling geométrico. Duração **Auto** por padrão: escala com a altura da página (~1200 px/s, entre 8s e 35s) — A/B no [TEST-REPORT](docs/TEST-REPORT.md) mostra por que tempo fixo maior não ajuda.
+- **Captura em 2 fases**: uma varredura rápida descobre *quais* elementos mudam com o scroll; a gravação contínua acompanha só esses (até 300), com keyframes indexados pelo progresso real de scroll e simplificados por downsampling geométrico **adaptativo por propriedade** (0.5% da amplitude de cada prop — movimento de milhares de px poda agressivo, fades e pins mantêm precisão fina). Duração **Auto** por padrão: escala com a altura da página (~1200 px/s, entre 8s e 35s) — A/B no [TEST-REPORT](docs/TEST-REPORT.md) mostra por que tempo fixo maior não ajuda.
 - **Propriedades capturadas**: `transform`, `opacity`, `filter`, `clip-path`, `background-position` — as que animam bem na GPU — e **pinning** (`position: fixed/sticky` + top/left/width/height, estilo ScrollTrigger `pin: true`), com *hold keys* que mantêm as transições nítidas.
 - **Dois modos de extração**: gravação por amostragem (funciona com GSAP, Lenis, Motion, qualquer JS) ou extração do CSS nativo (`animation-timeline: scroll()/view()` + `@keyframes`) como CSS puro.
 - **Detecção de stack**: o popup mostra as libs de animação detectadas na página (GSAP, ScrollTrigger, Lenis, Three.js, CSS Scroll-driven…).
@@ -51,8 +51,8 @@ node tools/validate.mjs URL   # site à escolha
 | Site | Paradigma | Nota (0–10) |
 |---|---|---|
 | scroll-driven-animations.style | CSS nativo | **9.9** |
-| lenis.darkroom.engineering | Lenis | **9.7** |
-| gsap.com | GSAP + ScrollTrigger | **8.6** |
+| lenis.darkroom.engineering | Lenis | **9.8** |
+| gsap.com | GSAP + ScrollTrigger | **8.4–8.7** |
 
 Critérios, pesos e limitações conhecidas: [docs/TEST-REPORT.md](docs/TEST-REPORT.md).
 
