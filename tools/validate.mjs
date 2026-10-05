@@ -25,7 +25,7 @@ const SITES = process.argv.slice(2).length
   : DEFAULT_SITES;
 
 const POSITIONS = [0.15, 0.35, 0.55, 0.75, 0.9];
-const RECORD_MS = 6000;
+const RECORD_MS = +(process.env.SFX_MS || 12000); // duracao da gravacao (A/B via env)
 
 /* snap + dist no lado da página (mesma semântica do capturador) */
 const PAGE_HELPERS = `window.__VH = (() => {
@@ -178,7 +178,9 @@ async function testSite(browser, site) {
       cobertura: out.targets ? clamp10(10 * (0.5 * Math.min(out.targets / 15, 1) + 0.5 * retention)) : 0,
       seletores: selStats.total ? clamp10(10 * ((selStats.unique + 0.5 * (selStats.found - selStats.unique)) / selStats.total)) : 0,
       bundle: clamp10(10 * (500 - out.bundleKb) / 440),
-      performance: clamp10(10 * (45000 - out.captureMs) / 30000),
+      // overhead sobre o nominal (gravacao + ~9s de varredura/assentamento),
+      // para nao punir duracoes de gravacao deliberadamente maiores
+      performance: clamp10(10 * (3 * (RECORD_MS + 9000) - out.captureMs) / (1.75 * (RECORD_MS + 9000))),
     };
     for (const k of Object.keys(scores)) scores[k] = +scores[k].toFixed(1);
     out.scores = scores;

@@ -226,7 +226,7 @@
 
   function startSample(opts) {
     opts = opts || {};
-    var duration = opts.duration || 8000;
+    var duration = opts.duration;
     var props = opts.props || PROPS;
     var root = document.documentElement;
     var prevSB = root.style.scrollBehavior, prevBodySB = document.body ? document.body.style.scrollBehavior : "";
@@ -235,6 +235,12 @@
     if (document.body) document.body.style.scrollBehavior = "auto";
     var els = candidates();
     return prescan(els, props).then(function (idx) {
+      // Auto: velocidade de scroll ~constante (1200 px/s) em vez de tempo fixo -
+      // efeitos scrubbed sao deterministas (tempo nao melhora) e animacoes
+      // infinitas por tempo (marquees) so acumulam ruido em capturas longas.
+      // Calculado apos a varredura, com o lazy-load ja carregado.
+      if (!duration || duration === "auto")
+        duration = Math.max(8000, Math.min(35000, pageTotal() / 1.2));
       var chosen = idx.map(function (i) { return els[i]; });
       var sels = chosen.map(buildSelector);
       if (!chosen.length) return { tracks: [], scanned: els.length, animated: 0 };

@@ -57,6 +57,18 @@ A v1.3 captura **pinning** (`position: fixed/sticky` + top/left/width/height) e 
 | lenis.darkroom.engineering | 9.7 | **9.7** |
 | gsap.com | 8.6 | **8.7** (59 alvos — elementos pinados agora entram) |
 
+## v1.4 — A/B de duração de captura (2026-10-05)
+
+Hipótese testada: "gravar por mais tempo melhora o resultado". Medição com o harness (`SFX_MS=6000` vs `12000`):
+
+| Site | Fidelidade 6s | Fidelidade 12s | Bundle 6s | Bundle 12s |
+|---|---|---|---|---|
+| scroll-driven-animations.style (determinístico) | 0.979 | 0.980 | 35 KB | 87 KB |
+| lenis.darkroom.engineering | 0.909 | 0.891 | 60 KB | 161 KB |
+| gsap.com (marquees/tweens por tempo) | 0.726 | **0.648** | 96 KB | 143 KB |
+
+**Conclusão**: efeitos *scrubbed* são determinísticos — tempo extra não muda nada; animações **por tempo de parede** (marquees, carrosséis) acumulam ciclos "assados" nos keyframes em capturas longas — mais ruído e mais bytes. O que importa é a **velocidade de scroll (px/s)**, que depende da altura da página. Resultado: duração **Auto** (~1200 px/s, limitada a [8s, 35s], calculada após a varredura com lazy-load carregado) virou o padrão; opções manuais 12/20/35s.
+
 ## Bug encontrado pelo harness no próprio projeto
 
 O `demo/demo.html` original usava `section { overflow: hidden }` — que cria um *scroll container* e sequestra a `view()` timeline do parallax (progresso fixo em 50%; o efeito nunca funcionou em navegador nenhum). Corrigido para `overflow: clip`. Nota do demo após o fix: 8.1.

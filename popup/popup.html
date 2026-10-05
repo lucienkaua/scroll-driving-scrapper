@@ -121,15 +121,16 @@
   <header>
     <div class="dot" id="dot"></div>
     <h1>SFX CLONE</h1>
-    <span class="ver">v1.3</span>
+    <span class="ver">v1.4</span>
   </header>
   <div id="stack" title="Bibliotecas detectadas na página"></div>
   <div class="row">
     <button id="sample"><span id="sampleDot"></span><span id="sampleLabel">Capturar rolagem</span></button>
-    <select id="dur" title="Duração da gravação">
-      <option value="4000">4s</option>
-      <option value="8000" selected>8s</option>
+    <select id="dur" title="Duração da gravação — Auto escala com a altura da página (~1200 px/s, entre 8s e 35s)">
+      <option value="auto" selected>Auto</option>
       <option value="12000">12s</option>
+      <option value="20000">20s</option>
+      <option value="35000">35s</option>
     </select>
   </div>
   <div class="row">

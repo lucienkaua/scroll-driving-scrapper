@@ -116,7 +116,8 @@ $("sample").onclick = async () => {
   setBusy(true);
   rulerProgress(0, "scan");
   status("Varrendo a página em busca de elementos animados…");
-  const r = await send(tab, { cmd: "sample", opts: { duration: +$("dur").value } });
+  const d = $("dur").value;
+  const r = await send(tab, { cmd: "sample", opts: { duration: d === "auto" ? "auto" : +d } });
   setBusy(false);
   if (!r || r.error || !r.ok) {
     status("Erro: " + (r && r.error || "a página não respondeu. Tente de novo."));

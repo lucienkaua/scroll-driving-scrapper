@@ -14,7 +14,7 @@ Extensão de Chrome (Manifest V3) que **clona as animações de rolagem de qualq
 └──────────────────────────┘   └──────────────────────┘   └──────────────────────┘
 ```
 
-- **Captura em 2 fases**: uma varredura rápida descobre *quais* elementos mudam com o scroll; a gravação contínua acompanha só esses (até 300), com keyframes indexados pelo progresso real de scroll e simplificados por downsampling geométrico.
+- **Captura em 2 fases**: uma varredura rápida descobre *quais* elementos mudam com o scroll; a gravação contínua acompanha só esses (até 300), com keyframes indexados pelo progresso real de scroll e simplificados por downsampling geométrico. Duração **Auto** por padrão: escala com a altura da página (~1200 px/s, entre 8s e 35s) — A/B no [TEST-REPORT](docs/TEST-REPORT.md) mostra por que tempo fixo maior não ajuda.
 - **Propriedades capturadas**: `transform`, `opacity`, `filter`, `clip-path`, `background-position` — as que animam bem na GPU — e **pinning** (`position: fixed/sticky` + top/left/width/height, estilo ScrollTrigger `pin: true`), com *hold keys* que mantêm as transições nítidas.
 - **Dois modos de extração**: gravação por amostragem (funciona com GSAP, Lenis, Motion, qualquer JS) ou extração do CSS nativo (`animation-timeline: scroll()/view()` + `@keyframes`) como CSS puro.
 - **Detecção de stack**: o popup mostra as libs de animação detectadas na página (GSAP, ScrollTrigger, Lenis, Three.js, CSS Scroll-driven…).
