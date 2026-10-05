@@ -7,24 +7,31 @@ SFX Clone — Scroll Effects
 Capture as animações de scroll de qualquer site e exporte um .js auto-contido para usar no seu projeto.
 
 ## Descrição detalhada
+
+> ⚠️ Regra aprendida na revisão de 2026-10-05 (rejeição "Yellow Argon" — spam de palavra-chave): **não enumerar nomes de bibliotecas/marcas de terceiros** na descrição. Descrever funcionalidades genericamente.
+
 Aponte para um site de referência, clique em Capturar e receba um bundle .js pronto para colar no seu projeto — com as mesmas animações de rolagem.
 
+POR QUE INSTALAR
+Recriar os efeitos de rolagem de um site que você admira leva horas de engenharia reversa no DevTools. O SFX Clone faz isso em segundos: rola a página, grava o que anima e entrega um arquivo .js auto-contido que reproduz os efeitos em qualquer página.
+
 COMO FUNCIONA
-• Varredura inteligente: a extensão rola a página, descobre quais elementos animam com o scroll e grava keyframes (transform, opacity, filter, clip-path, background-position e pinning de seções).
-• Bundle auto-contido: runtime de ~4 KB sem dependências + os keyframes capturados. Cole um <script> antes do </body> e pronto.
-• Duração automática: a gravação escala com a altura da página (8–35 s), com opções manuais de 12/20/35 s.
-• Seletores duráveis: classes hasheadas de bundlers (CSS Modules, styled-components…), classes de estado (is-inview, active…) e ids de runtime ficam fora — o bundle sobrevive a novos deploys do site de origem.
-• CSS nativo: sites que usam Scroll-driven Animations (animation-timeline) podem ser extraídos como CSS puro.
-• Detecção de stack: badges mostram as bibliotecas de animação da página (GSAP, ScrollTrigger, Lenis, AOS, Three.js…).
+• Varredura inteligente: descobre quais elementos animam com o scroll e grava keyframes de transform, opacity, filter, clip-path, background-position e fixação de seções.
+• Bundle auto-contido: runtime de ~4 KB sem dependências + os keyframes capturados. Cole um <script> antes do </body> e role.
+• Duração automática: a gravação escala com a altura da página (8–35 s), com opções manuais.
+• Seletores duráveis: classes geradas por build, classes de estado e ids de runtime ficam fora — o bundle sobrevive a novos deploys do site de origem.
+• Extração de CSS nativo: páginas que animam com timelines de rolagem do próprio CSS podem ser exportadas como CSS puro, sem JS.
+• Identificação da stack: o popup indica a tecnologia de animação detectada na página.
+• Respeita a preferência de movimento reduzido do usuário e restaura os estilos originais quando desativado.
 
 QUALIDADE MEDIDA
-Validada por harness automatizado em 7 paradigmas (CSS nativo, Lenis, GSAP/ScrollTrigger, Apple, AOS, Motion/React, Locomotive). Metodologia e notas: github.com/lucienkaua/scroll-driving-scrapper
+Validada por um harness automatizado em sete paradigmas diferentes de animação de rolagem, do CSS nativo a bibliotecas de rolagem suave. Metodologia, notas e código: github.com/lucienkaua/scroll-driving-scrapper
 
 PRIVACIDADE
 Nenhum dado é coletado. Nada roda em segundo plano: o capturador só é injetado na aba ativa quando você clica no ícone, e o bundle gerado fica somente no seu computador.
 
 LIMITAÇÕES HONESTAS
-Animações disparadas por tempo (IntersectionObserver + duração fixa) são aproximadas; conteúdo desenhado em canvas/WebGL não é alcançável por estilos computados.
+Animações disparadas por tempo são aproximadas; conteúdo desenhado em canvas/WebGL não é alcançável por estilos computados.
 
 Código aberto: github.com/lucienkaua/scroll-driving-scrapper
 Desenvolvido por lucienkaua
