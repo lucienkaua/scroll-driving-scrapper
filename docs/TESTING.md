@@ -30,6 +30,15 @@ Em todos: abra o site, espere carregar, clique no ícone da extensão e confira 
 - Captura esperada: **~50 alvos**. É o teste de estresse: site grande (~1500 elementos varridos).
 - Limitação visível aqui: tweens de entrada disparados por tempo ficam "assados" no estado da passagem — o esperado, documentado no [TEST-REPORT](TEST-REPORT.md).
 
+## Rodada 2 — paradigmas ainda não cobertos (baselines do harness @ 12s)
+
+| Site | Paradigma | Alvos | Bundle | Fidelidade | Nota |
+|---|---|---|---|---|---|
+| apple.com/br/airpods-pro | Scrollytelling in-house, sticky, DOM gigante (3.170 el.) | ~55 | ~52 KB | 0.80 | 8.6 |
+| michalsnik.github.io/aos | AOS (reveals em massa) | ~29 | ~118 KB | 0.93 | 9.6 |
+| motion.dev | Motion/React (springs por tempo) — **caso-limite proposital** | ~5 | ~33 KB | 0.16 | 5.4 |
+| locomotive.ca/en (bônus) | Locomotive Scroll (scroll virtual) — limite documentado | ~2 | ~8 KB | 1.00 | 8.9 |
+
 ## Validando o bundle gerado (o teste que convence)
 
 A graça é ver o site animando **sem o próprio motor de animação dele**:
