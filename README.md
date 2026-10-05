@@ -60,8 +60,18 @@ Critérios, pesos e limitações conhecidas: [docs/TEST-REPORT.md](docs/TEST-REP
 
 Instalação: copie a pasta para `~/.claude/skills/`.
 
+## Testando na mão
+
+Guia passo a passo com os 3 sites de referência e o que observar em cada um: [docs/TESTING.md](docs/TESTING.md).
+
 ## Limitações
 
 - Animações **disparadas por tempo** (IntersectionObserver + duração fixa) são gravadas no estado em que passaram pela captura — scrub e parallax determinísticos reproduzem com fidelidade; reveals por tempo ficam aproximados.
 - **Canvas/WebGL** não é alcançável via estilos computados (a detecção de stack avisa).
 - Páginas internas do navegador (`chrome://`, Web Store) não permitem captura.
+
+## Roadmap
+
+1. **Elementos pinados**: capturar também `position/top/width/height` de seções *pinned* (ScrollTrigger com `pin: true` fixa o elemento via wrapper + estilos inline — hoje o pin em si escapa da captura, só os transforms internos entram).
+2. **Modo viewport-relativo no runtime**: os keyframes são indexados pelo progresso global da página de origem; uma opção de mapear por seção/elemento (estilo `view()`) faria o bundle se adaptar a páginas com altura diferente da original.
+3. **Ícones da extensão** (16/48/128) e publicação na Chrome Web Store.
