@@ -9,6 +9,9 @@
   .rev{opacity:0;transform:translateY(40px);transition:none}
 </style></head><body>
   <section><div class="card p-hero"><h1>Parallax nativo</h1><p>scroll() / view() timeline</p></div></section>
+  <section class="pinwrap" style="height:300vh;align-items:flex-start">
+    <div class="card" id="pin-card"><h1>Pin JS</h1><p>fixa e desliza (estilo ScrollTrigger)</p></div>
+  </section>
   <section><div class="card rev"><h1>Reveal A</h1><p>aparece ao entrar na viewport</p></div></section>
   <section><div class="card rev"><h1>Reveal B</h1><p>idem</p></div></section>
   <section><div class="card rev"><h1>Fim</h1></div></section>
@@ -19,5 +22,18 @@
       {duration:700,easing:"cubic-bezier(.2,.7,.2,1)",fill:"forwards"});}
   }),{threshold:.4});
   document.querySelectorAll(".rev").forEach(el=>io.observe(el));
+
+  // mini-pin estilo ScrollTrigger: fixa o card enquanto a secao cruza a viewport
+  // e desliza ele horizontalmente conforme o progresso do pin
+  const wrap=document.querySelector(".pinwrap"), pin=document.getElementById("pin-card");
+  function pinTick(){
+    const r=wrap.getBoundingClientRect();
+    if(r.top<=0&&r.bottom>=innerHeight){
+      const prog=Math.min(1,-r.top/(r.height-innerHeight));
+      pin.style.position="fixed";pin.style.top="35vh";pin.style.left="50%";
+      pin.style.transform=`translateX(${-50-prog*40}%)`;
+    }else{pin.style.position="";pin.style.top="";pin.style.left="";pin.style.transform="";}
+  }
+  addEventListener("scroll",pinTick,{passive:true});pinTick();
 </script>
 </body></html>

@@ -46,6 +46,17 @@ Os três sites cobrem os três paradigmas de animação de scroll do mercado: **
 2. **Canvas/WebGL**: a captura lê estilos computados do DOM — o que é desenhado dentro de um canvas não é alcançável. A detecção de stack avisa quando há canvas na página.
 3. **Scroll virtual total** (quando a lib sequestra o scroll e `window.scrollY` não muda): não observado nos sites testados (Lenis moderno usa scroll nativo), mas é um cenário possível.
 
+## v1.3 — pinned sections + hold keys (2026-10-05)
+
+A v1.3 captura **pinning** (`position: fixed/sticky` + top/left/width/height) e ancora o estado anterior no frame anterior a cada mudança (*hold keys*), eliminando o borrão de interpolação em transições que ficam paradas e disparam. Resultados após a mudança:
+
+| Alvo | Antes | Depois |
+|---|---|---|
+| demo local (com seção pinada nova) | 8.1 | **9.2** (fidelidade 1.0) |
+| scroll-driven-animations.style | 9.9 | **9.9** |
+| lenis.darkroom.engineering | 9.7 | **9.7** |
+| gsap.com | 8.6 | **8.7** (59 alvos — elementos pinados agora entram) |
+
 ## Bug encontrado pelo harness no próprio projeto
 
 O `demo/demo.html` original usava `section { overflow: hidden }` — que cria um *scroll container* e sequestra a `view()` timeline do parallax (progresso fixo em 50%; o efeito nunca funcionou em navegador nenhum). Corrigido para `overflow: clip`. Nota do demo após o fix: 8.1.

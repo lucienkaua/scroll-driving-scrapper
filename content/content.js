@@ -7,7 +7,9 @@
   var MAX_ELS = 300;    // alvos animados acompanhados na gravação
   var MAX_SCAN = 4000;  // elementos inspecionados na varredura
   var SCAN_STOPS = 13;  // paradas da varredura rápida (0..1)
-  var PROPS = ["transform", "opacity", "filter", "clipPath", "backgroundPosition"];
+  // "pin" e um pseudo-prop: position/top/left/width/height quando fixed|sticky
+  // (captura o pinning de secoes estilo ScrollTrigger)
+  var PROPS = ["transform", "opacity", "filter", "clipPath", "backgroundPosition", "pin"];
 
   function cssEsc(s) { return (globalThis.CSS && CSS.escape) ? CSS.escape(s) : String(s); }
   function parseT(t) {
@@ -55,6 +57,8 @@
     props.forEach(function (p) {
       if (p === "transform") o.transform = parseT(cs.transform);
       else if (p === "opacity") o.opacity = parseFloat(cs.opacity);
+      else if (p === "pin") o.pin = (cs.position === "fixed" || cs.position === "sticky")
+        ? cs.position + " " + cs.top + " " + cs.left + " " + cs.width + " " + cs.height : "none";
       else o[p] = cs[p];
     });
     return o;
@@ -176,18 +180,25 @@
     return new Promise(function (resolve) {
       var records = new Array(els.length);
       var prev = new Array(els.length);
-      var started = false, pPrev = 0, pMax = 0;
+      var started = false, pPrev = 0, pMax = 0, pLastRead = null;
       function readAll(p) {
         if (p < pMax) p = pMax; else pMax = p;
+        var pr3 = Math.round(p * 1000) / 1000;
         els.forEach(function (el, i) {
           if (!el.isConnected) return;
           var s = snap(el, props), pr = prev[i];
           if (!pr || styleDist(pr, s) > 1e-4) {
             if (records[i] === undefined) records[i] = { sel: sels[i], keys: [] };
-            records[i].keys.push({ p: Math.round(p * 1000) / 1000, s: s });
+            var keys = records[i].keys;
+            // ancora o estado anterior no frame anterior a mudanca - sem isso a
+            // interpolacao "borra" transicoes que ficaram paradas (pin, reveals)
+            if (pr && pLastRead != null && keys.length && keys[keys.length - 1].p < pLastRead)
+              keys.push({ p: pLastRead, s: pr });
+            keys.push({ p: pr3, s: s });
             prev[i] = s;
           }
         });
+        pLastRead = pr3;
       }
       window.scrollTo(0, 0);
       nextFrames(6).then(function () {

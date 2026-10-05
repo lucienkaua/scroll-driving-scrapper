@@ -93,7 +93,9 @@ function buildBundle(tracks, src, meta) {
   return "/* SFX bundle" + (meta && meta.url ? " - " + meta.url : "") + " - " + new Date().toISOString() + " */\n"
     + src + "\n;\n"
     + "window.__SFX_TRACKS__ = " + JSON.stringify(tracks) + ";\n"
-    + "(function(){function go(){window.__SFX__=SFX.init(window.__SFX_TRACKS__);}"
+    + "window.__SFX_META__ = " + JSON.stringify(meta || null) + ";\n"
+    // mode: "fraction" (progresso relativo a esta pagina) | "pixel" (mesmos offsets da origem)
+    + "(function(){function go(){window.__SFX__=SFX.init(window.__SFX_TRACKS__,{meta:window.__SFX_META__,mode:\"fraction\"});}"
     + "if(document.readyState===\"loading\")document.addEventListener(\"DOMContentLoaded\",go);else go();})();\n";
 }
 

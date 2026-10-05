@@ -24,7 +24,19 @@
     }
     return out;
   }
-  var STR_PROPS = ["filter", "clipPath", "backgroundPosition"];
+  var STR_PROPS = ["filter", "clipPath", "backgroundPosition", "pin"];
+  // pin: "fixed|sticky top left width height" capturado de secoes pinadas; "none" despina
+  function applyPin(el, v) {
+    if (!v || v === "none") {
+      el.style.position = ""; el.style.top = ""; el.style.left = "";
+      el.style.width = ""; el.style.height = "";
+      return;
+    }
+    var m = /^(fixed|sticky)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)/.exec(v);
+    if (!m) return;
+    el.style.position = m[1]; el.style.top = m[2]; el.style.left = m[3];
+    el.style.width = m[4]; el.style.height = m[5];
+  }
   function lerpStyle(A, B, t, out) {
     if (A.transform || B.transform)
       out.transform = "matrix(" + lerpArr(A.transform || idm(), B.transform || idm(), t)
@@ -72,6 +84,7 @@
         list.forEach(function (el) {
           items.push({ el: el, keys: tr.keys, props: props, saved: el.getAttribute("style") });
           if (opts.willChange !== false) el.style.willChange = props
+            .filter(function (p) { return p !== "pin"; })
             .map(function (p) { return p.replace(/[A-Z]/g, function (m) { return "-" + m.toLowerCase(); }); }).join(",");
         });
       });
@@ -80,9 +93,14 @@
       if (it.saved == null) it.el.removeAttribute("style");
       else it.el.setAttribute("style", it.saved);
     }
+    // mode "fraction" (padrao): progresso relativo a altura DESTA pagina.
+    // mode "pixel": progresso sobre a mesma faixa de pixels da pagina de origem
+    // (opts.meta vem do bundle) - os efeitos acontecem nos mesmos offsets.
     function progress() {
-      var doc = document.documentElement;
-      var total = doc.scrollHeight - global.innerHeight;
+      var total;
+      if (opts.mode === "pixel" && opts.meta && opts.meta.scrollHeight)
+        total = opts.meta.scrollHeight - (opts.meta.viewport && opts.meta.viewport.h || global.innerHeight);
+      else total = document.documentElement.scrollHeight - global.innerHeight;
       return total > 0 ? Math.max(0, Math.min(1, global.scrollY / total)) : 0;
     }
     function apply(it, p) {
@@ -93,6 +111,7 @@
       if (st.filter != null) it.el.style.filter = st.filter;
       if (st.clipPath != null) it.el.style.clipPath = st.clipPath;
       if (st.backgroundPosition != null) it.el.style.backgroundPosition = st.backgroundPosition;
+      if (st.pin != null) applyPin(it.el, st.pin);
     }
     function update() {
       var p = progress();
@@ -114,6 +133,6 @@
     return { reload: load, update: update, destroy: destroy, reduced: reduced, count: function () { return items.length; } };
   }
   global.SFX = global.SFX || {};
-  global.SFX.version = "1.1.0";
+  global.SFX.version = "1.3.0";
   global.SFX.init = function (tracks, opts) { return new SFXRuntime(Object.assign({ tracks: tracks }, opts)); };
 })(typeof window !== "undefined" ? window : this);

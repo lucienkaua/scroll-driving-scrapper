@@ -33,7 +33,9 @@ const PAGE_HELPERS = `window.__VH = (() => {
     const m = /matrix\\(([^)]+)\\)/.exec(t); return m ? m[1].split(",").map(parseFloat) : [1,0,0,1,0,0]; };
   const snap = (el) => { const cs = getComputedStyle(el); return {
     transform: parseT(cs.transform), opacity: parseFloat(cs.opacity),
-    filter: cs.filter, clipPath: cs.clipPath, backgroundPosition: cs.backgroundPosition }; };
+    filter: cs.filter, clipPath: cs.clipPath, backgroundPosition: cs.backgroundPosition,
+    pin: (cs.position === "fixed" || cs.position === "sticky")
+      ? cs.position + " " + cs.top + " " + cs.left + " " + cs.width + " " + cs.height : "none" }; };
   return { snap };
 })();`;
 
@@ -46,7 +48,7 @@ function styleDist(a, b) {
   let d = 0;
   for (let i = 0; i < 6; i++) d += Math.abs((a.transform?.[i] ?? 0) - (b.transform?.[i] ?? 0));
   d += Math.abs((a.opacity ?? 1) - (b.opacity ?? 1)) * 10;
-  for (const p of ["filter", "clipPath", "backgroundPosition"]) {
+  for (const p of ["filter", "clipPath", "backgroundPosition", "pin"]) {
     const A = tokenize(a[p]), B = tokenize(b[p]);
     if (A.length !== B.length) { d += 2; continue; }
     for (let j = 0; j < A.length; j++) {

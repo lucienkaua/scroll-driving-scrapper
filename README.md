@@ -15,7 +15,7 @@ Extensão de Chrome (Manifest V3) que **clona as animações de rolagem de qualq
 ```
 
 - **Captura em 2 fases**: uma varredura rápida descobre *quais* elementos mudam com o scroll; a gravação contínua acompanha só esses (até 300), com keyframes indexados pelo progresso real de scroll e simplificados por downsampling geométrico.
-- **Propriedades capturadas**: `transform`, `opacity`, `filter`, `clip-path`, `background-position` — as que animam bem na GPU.
+- **Propriedades capturadas**: `transform`, `opacity`, `filter`, `clip-path`, `background-position` — as que animam bem na GPU — e **pinning** (`position: fixed/sticky` + top/left/width/height, estilo ScrollTrigger `pin: true`), com *hold keys* que mantêm as transições nítidas.
 - **Dois modos de extração**: gravação por amostragem (funciona com GSAP, Lenis, Motion, qualquer JS) ou extração do CSS nativo (`animation-timeline: scroll()/view()` + `@keyframes`) como CSS puro.
 - **Detecção de stack**: o popup mostra as libs de animação detectadas na página (GSAP, ScrollTrigger, Lenis, Three.js, CSS Scroll-driven…).
 - **Runtime respeitoso**: `prefers-reduced-motion`, `will-change` automático, `destroy()` que restaura os estilos originais, zero dependências (~4KB).
@@ -36,7 +36,7 @@ O `content/content.js` também funciona colado direto no Console do DevTools (se
 <script src="scrollfx.bundle.js"></script> <!-- antes do </body> -->
 ```
 
-O bundle se auto-inicializa e expõe `window.__SFX__` (`reload()`, `update()`, `destroy()`).
+O bundle se auto-inicializa e expõe `window.__SFX__` (`reload()`, `update()`, `destroy()`). Por padrão o progresso é **relativo à altura da página atual** (`mode: "fraction"`); troque para `mode: "pixel"` no final do bundle para reproduzir nos **mesmos offsets de pixel** da página de origem (útil quando sua página tem altura diferente).
 
 ## Validação
 
@@ -74,7 +74,7 @@ Guia passo a passo com os 3 sites de referência e o que observar em cada um: [d
 
 ## Roadmap
 
-1. **Elementos pinados**: capturar também `position/top/width/height` de seções *pinned* (ScrollTrigger com `pin: true` fixa o elemento via wrapper + estilos inline — hoje o pin em si escapa da captura, só os transforms internos entram).
-2. **Modo viewport-relativo no runtime**: os keyframes são indexados pelo progresso global da página de origem; uma opção de mapear por seção/elemento (estilo `view()`) faria o bundle se adaptar a páginas com altura diferente da original.
+1. ~~Elementos pinados~~ — **feito na v1.3** (captura de `position/top/left/width/height` + hold keys nas transições).
+2. ~~Modo viewport-relativo~~ — **feito na v1.3** (`mode: "pixel" | "fraction"` no runtime).
 3. **Seletores resistentes a build**: ignorar classes hasheadas de bundlers (ex.: `anton_a8b17dcd-module__...` de CSS Modules/Next.js) ao montar seletores — hoje elas entram e quebram quando o site faz novo deploy.
 4. **Ícones da extensão** (16/48/128) e publicação na Chrome Web Store.
