@@ -92,6 +92,8 @@ Achado da rodada 2 de testes manuais: 2/32 seletores da Apple e 1/2 do Locomotiv
 
 Medido: suíte sintética 18/18 únicos sem nenhum id/classe/attr instável; Apple **26/26 únicos** (antes 30/32 no teste manual); locomotive 2/2; demo sem regressão (fidelidade 1.0).
 
+**v1.9 (addendum)** — a rodada 3 de testes manuais isolou o último miss da Apple: `staggered-end`, uma **classe de estado** aplicada após a animação rodar (não existe no load fresco). Correção em duas camadas: bloqueio por nome (`is-*`, `has-*`, `active`, `inview`, `aos-animate`, `*-end`…) + **observação real** — a varredura registra o classList em cada uma das 14 paradas e só considera estável a classe presente o tempo todo. O caso exato da Apple passou a gerar `div.viewport-content[data-component-list="StaggeredFadeIn"]`; harness: Apple 25/25 únicos, demo fidelidade 1.0.
+
 ## Bug encontrado pelo harness no próprio projeto
 
 O `demo/demo.html` original usava `section { overflow: hidden }` — que cria um *scroll container* e sequestra a `view()` timeline do parallax (progresso fixo em 50%; o efeito nunca funcionou em navegador nenhum). Corrigido para `overflow: clip`. Nota do demo após o fix: 8.1.

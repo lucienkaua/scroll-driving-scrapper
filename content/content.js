@@ -34,6 +34,23 @@
       return t.length >= 6 || (t.length >= 5 && mixedCase);
     });
   }
+  // classes de ESTADO aplicadas em runtime (is-inview, active, staggered-end,
+  // aos-animate...) nao existem no load da pagina - seletor com elas morre.
+  // Duas defesas: bloqueio por nome + observacao real (a varredura registra o
+  // classList em cada parada; so e estavel a classe presente o tempo todo).
+  var STATE_CLASS = /^(is-|has-|was-)|(^|-)(active|open|opened|closed|visible|invisible|shown|loaded|loading|animate|animated|animating|inview|stuck|selected|expanded|collapsed|dragging|scrolling|entered|end)($|-)/;
+  var observedCls = (typeof WeakMap !== "undefined") ? new WeakMap() : null;
+  function observeClasses(el) {
+    if (!observedCls) return;
+    var prev = observedCls.get(el);
+    if (!prev) { observedCls.set(el, Array.prototype.slice.call(el.classList)); return; }
+    for (var i = prev.length - 1; i >= 0; i--)
+      if (!el.classList.contains(prev[i])) prev.splice(i, 1);
+  }
+  function stableClasses(n) {
+    var base = (observedCls && observedCls.get(n)) || Array.prototype.slice.call(n.classList);
+    return base.filter(function (c) { return !hashedClass(c) && !STATE_CLASS.test(c); });
+  }
   // ids gerados em runtime (React useId ":r5:", gradientes svg "paint0_linear_...")
   // mudam entre renders/builds - nao servem de ancora
   function stableId(id) {
@@ -59,9 +76,7 @@
   function attrEsc(v) { return v.replace(/\\/g, "\\\\").replace(/"/g, '\\"'); }
   function segFor(n) {
     var seg = n.tagName.toLowerCase();
-    var cls = Array.prototype.slice.call(n.classList)
-      .filter(function (c) { return !hashedClass(c); })
-      .slice(0, 2).map(cssEsc).join(".");
+    var cls = stableClasses(n).slice(0, 2).map(cssEsc).join(".");
     if (cls) seg += "." + cls;
     var da = stableDataAttr(n);
     if (da) seg += "[" + da.name + (da.value ? '="' + attrEsc(da.value) + '"' : "") + "]";
@@ -219,7 +234,9 @@
     var stop = 0;
     function atStop() {
       for (var i = 0; i < els.length; i++) {
-        if (flags[i] || !els[i].isConnected) continue;
+        if (!els[i].isConnected) continue;
+        observeClasses(els[i]);
+        if (flags[i]) continue;
         var s = snap(els[i], props);
         if (!base[i]) base[i] = s;
         else if (styleDist(base[i], s) > 0.05) flags[i] = true;
