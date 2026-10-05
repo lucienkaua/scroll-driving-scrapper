@@ -18,12 +18,16 @@ Extensão de Chrome (Manifest V3) que **clona as animações de rolagem de qualq
 
 - **Captura em 2 fases**: uma varredura rápida descobre *quais* elementos mudam com o scroll; a gravação contínua acompanha só esses (até 300), com keyframes indexados pelo progresso real de scroll e simplificados por downsampling geométrico **adaptativo por propriedade** (0.5% da amplitude de cada prop — movimento de milhares de px poda agressivo, fades e pins mantêm precisão fina). Duração **Auto** por padrão: escala com a altura da página (~1200 px/s, entre 8s e 35s) — A/B no [TEST-REPORT](docs/TEST-REPORT.md) mostra por que tempo fixo maior não ajuda.
 - **Propriedades capturadas**: `transform`, `opacity`, `filter`, `clip-path`, `background-position` — as que animam bem na GPU — e **pinning** (`position: fixed/sticky` + top/left/width/height, estilo ScrollTrigger `pin: true`), com *hold keys* que mantêm as transições nítidas.
+- **Seletores para DOM dinâmico**: âncoras em `data-*` estáveis (`data-testid`, `data-aos`…), classes de estado (`is-inview`, `active`, `staggered-end`…) e ids de runtime (React `useId`, gradientes SVG) ficam fora — a varredura ainda **observa** o classList em 14 paradas e só considera estável o que esteve presente o tempo todo.
 - **Dois modos de extração**: gravação por amostragem (funciona com GSAP, Lenis, Motion, qualquer JS) ou extração do CSS nativo (`animation-timeline: scroll()/view()` + `@keyframes`) como CSS puro.
 - **Detecção de stack**: o popup mostra as libs de animação detectadas na página (GSAP, ScrollTrigger, Lenis, Three.js, CSS Scroll-driven…).
 - **Runtime respeitoso**: `prefers-reduced-motion`, `will-change` automático, `destroy()` que restaura os estilos originais, zero dependências (~4KB).
 
 ## Instalação
 
+**Chrome Web Store**: em breve — pacote de publicação pronto em [`store/`](store/).
+
+Manual (modo desenvolvedor):
 1. `chrome://extensions` → ativar **Modo do desenvolvedor**
 2. **Carregar sem compactação** → selecionar esta pasta
 3. Abrir o site alvo → clicar no ícone → **Capturar rolagem**
@@ -56,7 +60,7 @@ node tools/validate.mjs URL   # site à escolha
 | lenis.darkroom.engineering | Lenis | **9.8** |
 | gsap.com | GSAP + ScrollTrigger | **8.4–8.7** |
 
-Critérios, pesos e limitações conhecidas: [docs/TEST-REPORT.md](docs/TEST-REPORT.md).
+Critérios, pesos e limitações conhecidas: [docs/TEST-REPORT.md](docs/TEST-REPORT.md). O QA cobriu **7 paradigmas** (CSS nativo, Lenis, GSAP/ScrollTrigger, scrollytelling da Apple, AOS, Motion/React e Locomotive virtual scroll) em 3 rodadas de teste manual auditadas — na última, 50/51 seletores resolvendo ao vivo, e o único miss virou a correção da v1.9.
 
 ## Skill para agentes (Claude Code)
 
@@ -80,7 +84,7 @@ Guia passo a passo com os 3 sites de referência e o que observar em cada um: [d
 2. ~~Modo viewport-relativo~~ — **feito na v1.3** (`mode: "pixel" | "fraction"` no runtime).
 3. ~~Seletores resistentes a build~~ — **feito na v1.5** (classes de CSS Modules/styled-components/emotion/svelte são ignoradas na montagem do seletor; a verificação de unicidade compensa com mais profundidade/`nth-of-type`).
 4. ~~Ícones da extensão~~ — **feito na v1.7** (SVG fonte em `icons/icon.svg`, PNGs gerados por `tools/make-icons.mjs`).
-5. **Publicação na Chrome Web Store** (zip, screenshots, descrição, política de privacidade).
+5. **Publicação na Chrome Web Store** — materiais prontos em [`store/`](store/) (listagem, screenshots, política de privacidade, justificativas de permissão e zip de distribuição via `tools/make-store-zip.ps1`).
 
 ---
 

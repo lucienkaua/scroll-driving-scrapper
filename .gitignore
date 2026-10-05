@@ -1,2 +1,4 @@
 node_modules/
 tools/out/
+store/*.zip
+store/dist/
