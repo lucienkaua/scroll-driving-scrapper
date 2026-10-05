@@ -1,0 +1,23 @@
+<!doctype html><html lang="pt-br"><head><meta charset="utf-8"><title>SFX demo</title>
+<style>
+  body{margin:0;font-family:system-ui;background:#0b0b0f;color:#eee}
+  /* overflow:clip (nao hidden): hidden cria um scroll container e sequestra a view() timeline */
+  section{height:150vh;display:flex;align-items:center;justify-content:center;overflow:clip}
+  .card{width:min(70vw,520px);padding:40px;border-radius:16px;background:#15151d;text-align:center}
+  .p-hero{animation:para linear;animation-timeline:view();animation-range:entry 0% exit 100%;}
+  @keyframes para{from{transform:translateY(60px) scale(.9)}to{transform:translateY(-60px) scale(1.05)}}
+  .rev{opacity:0;transform:translateY(40px);transition:none}
+</style></head><body>
+  <section><div class="card p-hero"><h1>Parallax nativo</h1><p>scroll() / view() timeline</p></div></section>
+  <section><div class="card rev"><h1>Reveal A</h1><p>aparece ao entrar na viewport</p></div></section>
+  <section><div class="card rev"><h1>Reveal B</h1><p>idem</p></div></section>
+  <section><div class="card rev"><h1>Fim</h1></div></section>
+<script>
+  const io=new IntersectionObserver(es=>es.forEach(e=>{
+    if(e.isIntersecting){e.target.animate(
+      [{opacity:0,transform:"translateY(40px)"},{opacity:1,transform:"translateY(0)"}],
+      {duration:700,easing:"cubic-bezier(.2,.7,.2,1)",fill:"forwards"});}
+  }),{threshold:.4});
+  document.querySelectorAll(".rev").forEach(el=>io.observe(el));
+</script>
+</body></html>
