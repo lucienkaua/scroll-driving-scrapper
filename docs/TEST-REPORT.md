@@ -82,6 +82,16 @@ Caso real encontrado em teste manual: bundle do lenis.dev com **647 KB / 4.716 k
 
 A fidelidade *sobe* junto com a poda: o ruído de amortecimento baked vira reta — que é o comportamento correto do efeito.
 
+## v1.8 — seletores para DOM dinâmico (2026-10-05)
+
+Achado da rodada 2 de testes manuais: 2/32 seletores da Apple e 1/2 do Locomotive não resolviam entre sessões (DOM com variantes responsivas/testes A/B quebra índice posicional). Correções:
+
+1. **Âncoras `data-*` estáveis** (`data-testid`, `data-aos`, `data-section`…) entram no segmento do seletor; nomes/valores mutáveis (`data-state`, `data-active`…) ou aleatórios ficam de fora.
+2. **`nth-of-type` só quando o segmento completo (tag+classes+attr) ainda é ambíguo** entre os irmãos — índice posicional é o que quebra em DOM dinâmico.
+3. **ids gerados em runtime rejeitados**: React `useId` (`:r5:`), gradientes SVG (`paint0_linear_…`), ids hasheados.
+
+Medido: suíte sintética 18/18 únicos sem nenhum id/classe/attr instável; Apple **26/26 únicos** (antes 30/32 no teste manual); locomotive 2/2; demo sem regressão (fidelidade 1.0).
+
 ## Bug encontrado pelo harness no próprio projeto
 
 O `demo/demo.html` original usava `section { overflow: hidden }` — que cria um *scroll container* e sequestra a `view()` timeline do parallax (progresso fixo em 50%; o efeito nunca funcionou em navegador nenhum). Corrigido para `overflow: clip`. Nota do demo após o fix: 8.1.

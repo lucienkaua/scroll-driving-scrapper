@@ -34,27 +34,59 @@
       return t.length >= 6 || (t.length >= 5 && mixedCase);
     });
   }
+  // ids gerados em runtime (React useId ":r5:", gradientes svg "paint0_linear_...")
+  // mudam entre renders/builds - nao servem de ancora
+  function stableId(id) {
+    return !!id && id.indexOf(":") === -1 && !hashedClass(id);
+  }
+  // data-* com valor estavel e a melhor ancora em DOM dinamico (data-aos,
+  // data-testid, data-section...). Nomes/valores que soam mutaveis ou
+  // aleatorios ficam de fora.
+  var MUTABLE_ATTR = /state|active|open|expanded|selected|checked|loading|progress|scroll|visible|animat|inview|in-view|index|current|focus/;
+  function stableDataAttr(n) {
+    var best = null;
+    for (var i = 0; i < n.attributes.length; i++) {
+      var a = n.attributes[i];
+      if (a.name.lastIndexOf("data-", 0) !== 0) continue;
+      var key = a.name.slice(5);
+      if (!key || MUTABLE_ATTR.test(key) || hashedClass(key)) continue;
+      if (/^(v-|reactid|sfx)/.test(key)) continue;
+      if (a.value.length > 40 || (a.value && hashedClass(a.value))) continue;
+      if (!best || a.name.length < best.name.length) best = a;
+    }
+    return best;
+  }
+  function attrEsc(v) { return v.replace(/\\/g, "\\\\").replace(/"/g, '\\"'); }
   function segFor(n) {
     var seg = n.tagName.toLowerCase();
     var cls = Array.prototype.slice.call(n.classList)
       .filter(function (c) { return !hashedClass(c); })
       .slice(0, 2).map(cssEsc).join(".");
     if (cls) seg += "." + cls;
+    var da = stableDataAttr(n);
+    if (da) seg += "[" + da.name + (da.value ? '="' + attrEsc(da.value) + '"' : "") + "]";
     var parent = n.parentElement;
     if (parent) {
-      var same = Array.prototype.slice.call(parent.children).filter(function (c) { return c.tagName === n.tagName; });
-      if (same.length > 1) seg += ":nth-of-type(" + (same.indexOf(n) + 1) + ")";
+      // nth-of-type so quando o segmento inteiro (tag+classes+attr) ainda e
+      // ambiguo entre os irmaos - indice posicional e o que quebra em DOM dinamico
+      var ambiguous;
+      try { ambiguous = parent.querySelectorAll(":scope > " + seg).length > 1; }
+      catch (e) { ambiguous = true; }
+      if (ambiguous) {
+        var same = Array.prototype.slice.call(parent.children).filter(function (c) { return c.tagName === n.tagName; });
+        if (same.length > 1) seg += ":nth-of-type(" + (same.indexOf(n) + 1) + ")";
+      }
     }
     return seg;
   }
   function buildSelector(el) {
-    if (el.id) {
+    if (stableId(el.id)) {
       var idSel = "#" + cssEsc(el.id);
       try { if (document.querySelectorAll(idSel).length === 1) return idSel; } catch (e) {}
     }
     var segs = [], n = el;
     while (n && n.nodeType === 1 && n !== document.body && segs.length < 8) {
-      if (n.id) { segs.unshift("#" + cssEsc(n.id)); break; }
+      if (stableId(n.id)) { segs.unshift("#" + cssEsc(n.id)); break; }
       segs.unshift(segFor(n));
       n = n.parentElement;
     }

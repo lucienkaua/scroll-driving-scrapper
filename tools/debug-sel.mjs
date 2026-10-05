@@ -17,6 +17,16 @@ const HTML = `<!doctype html><html class="anton_a8b17dcd-module__Xi7J6a__variabl
       <em class="dr-py-30 desktop-only">tokens estaveis</em>
       <i class="x1n2onr6 x9f619">facebook-style</i>
     </div>
+    <section id=":r5:" class="css-9x8y7z">
+      <div data-testid="hero-card" class="css-abc123">react useId + data-testid</div>
+      <div data-testid="hero-card-alt">segundo card</div>
+    </section>
+    <section data-v-1a2b3c4d class="gallery">
+      <figure data-aos="fade-up" data-aos-delay="300">aos 1</figure>
+      <figure data-aos="fade-up">aos 2</figure>
+      <figure data-state="open" data-section="features">mutavel vs estavel</figure>
+    </section>
+    <svg><defs><linearGradient id="paint0_linear_2163_47664"><stop/></linearGradient></defs></svg>
   </div>
 </body></html>`;
 
@@ -31,6 +41,6 @@ const out = await page.evaluate(() => {
   });
 });
 for (const o of out) console.log((o.unico ? "OK  " : "DUP ") + o.sel);
-const dirty = out.filter((o) => /module|css-1|sc-bdVaJa|svelte-1|[0-9a-f]{8}/.test(o.sel));
-console.log(dirty.length ? "\nFALHOU: seletores com hash: " + dirty.length : "\nNenhum hash nos seletores.");
+const dirty = out.filter((o) => /module|css-\w|sc-bdVaJa|svelte-1|[0-9a-f]{8}|:r5:|data-state|data-v-|paint0/.test(o.sel));
+console.log(dirty.length ? "\nFALHOU: instaveis nos seletores: " + JSON.stringify(dirty) : "\nNenhum id/classe/attr instavel nos seletores.");
 await browser.close();
