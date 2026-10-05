@@ -1,3 +1,5 @@
+<img src="icons/icon128.png" width="64" align="right" alt="SFX Clone">
+
 # SFX Clone — Scroll Effects Scrapper
 
 Extensão de Chrome (Manifest V3) que **clona as animações de rolagem de qualquer site** e as empacota num `.js` auto-contido, pronto para colar em outra página. Aponte para um site de referência, capture, cole o bundle no seu projeto.
@@ -77,4 +79,9 @@ Guia passo a passo com os 3 sites de referência e o que observar em cada um: [d
 1. ~~Elementos pinados~~ — **feito na v1.3** (captura de `position/top/left/width/height` + hold keys nas transições).
 2. ~~Modo viewport-relativo~~ — **feito na v1.3** (`mode: "pixel" | "fraction"` no runtime).
 3. ~~Seletores resistentes a build~~ — **feito na v1.5** (classes de CSS Modules/styled-components/emotion/svelte são ignoradas na montagem do seletor; a verificação de unicidade compensa com mais profundidade/`nth-of-type`).
-4. **Ícones da extensão** (16/48/128) e publicação na Chrome Web Store.
+4. ~~Ícones da extensão~~ — **feito na v1.7** (SVG fonte em `icons/icon.svg`, PNGs gerados por `tools/make-icons.mjs`).
+5. **Publicação na Chrome Web Store** (zip, screenshots, descrição, política de privacidade).
+
+---
+
+Desenvolvido por [**lucienkaua**](https://github.com/lucienkaua)

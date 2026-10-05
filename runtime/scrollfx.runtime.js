@@ -133,6 +133,6 @@
     return { reload: load, update: update, destroy: destroy, reduced: reduced, count: function () { return items.length; } };
   }
   global.SFX = global.SFX || {};
-  global.SFX.version = "1.6.0";
+  global.SFX.version = "1.7.0";
   global.SFX.init = function (tracks, opts) { return new SFXRuntime(Object.assign({ tracks: tracks }, opts)); };
 })(typeof window !== "undefined" ? window : this);
