@@ -22,9 +22,23 @@
     return String(str).match(/-?\d*\.?\d+(?:e-?\d+)?|\s|[^ \d.]/gi) || [];
   }
 
+  // classes geradas por bundler (CSS Modules, styled-components, emotion, svelte...)
+  // mudam a cada deploy do site - nao servem para seletor duravel
+  function hashedClass(c) {
+    if (/^(css|sc|jss|svelte|astro|emotion)-/i.test(c)) return true;
+    if (/module/i.test(c) && /[0-9]/.test(c)) return true;
+    if (/[0-9a-f]{8,}/i.test(c)) return true;
+    return c.split(/[^a-zA-Z0-9]+/).some(function (t) {
+      if (!/[0-9]/.test(t) || !/[a-zA-Z]/.test(t)) return false;
+      var mixedCase = /[a-z]/.test(t) && /[A-Z]/.test(t);
+      return t.length >= 6 || (t.length >= 5 && mixedCase);
+    });
+  }
   function segFor(n) {
     var seg = n.tagName.toLowerCase();
-    var cls = Array.prototype.slice.call(n.classList).slice(0, 2).map(cssEsc).join(".");
+    var cls = Array.prototype.slice.call(n.classList)
+      .filter(function (c) { return !hashedClass(c); })
+      .slice(0, 2).map(cssEsc).join(".");
     if (cls) seg += "." + cls;
     var parent = n.parentElement;
     if (parent) {
@@ -353,7 +367,7 @@
   } else {
     globalThis.SFXCapture = {
       startSample: startSample, extractNative: extractNative, detectStack: detectStack,
-      PROPS: PROPS, MAX_ELS: MAX_ELS
+      buildSelector: buildSelector, PROPS: PROPS, MAX_ELS: MAX_ELS
     };
   }
 })();

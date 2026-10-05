@@ -76,5 +76,5 @@ Guia passo a passo com os 3 sites de referência e o que observar em cada um: [d
 
 1. ~~Elementos pinados~~ — **feito na v1.3** (captura de `position/top/left/width/height` + hold keys nas transições).
 2. ~~Modo viewport-relativo~~ — **feito na v1.3** (`mode: "pixel" | "fraction"` no runtime).
-3. **Seletores resistentes a build**: ignorar classes hasheadas de bundlers (ex.: `anton_a8b17dcd-module__...` de CSS Modules/Next.js) ao montar seletores — hoje elas entram e quebram quando o site faz novo deploy.
+3. ~~Seletores resistentes a build~~ — **feito na v1.5** (classes de CSS Modules/styled-components/emotion/svelte são ignoradas na montagem do seletor; a verificação de unicidade compensa com mais profundidade/`nth-of-type`).
 4. **Ícones da extensão** (16/48/128) e publicação na Chrome Web Store.
