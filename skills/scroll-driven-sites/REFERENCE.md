@@ -161,3 +161,56 @@ Quando quiser menos código: "use Scroll-driven Animations do CSS (`animation-ti
 1. Botão magnético · 2. Cursor custom com lerp · 3. Text split/stagger reveal · 4. Imagem com clip-path mask · 5. Marquee · 6. Preloader com contador · 7. Card tilt · 8. Carousel arrastável · 9. Transição de página (View Transitions) · 10. Contador numérico ligado ao scroll.
 
 Método de estudo: abrir site premiado (Awwwards/FWA/Godly) → DevTools → Network → identificar `gsap`/`lenis`/`three` → clonar 1:1. O SFX Clone acelera isso capturando os keyframes reais do site de referência.
+
+## §8 Catálogo de padrões de scroll (quando usar / quando evitar)
+
+Destilado de pesquisa de NN/g, Baymard, web.dev, MDN e W3C WAI (via artigo da Lovable).
+
+**8.1 Parallax (profundidade em camadas)** — camadas a velocidades diferentes. USE em microsites de campanha e storytelling desktop-first (o benchmark Nike Better World era um microsite, não o e-commerce). EVITE no site principal, em mobile-first e onde SEO importa. Sempre CSS 3D transforms ou scroll-driven animations — listener de scroll JS força repaint de página inteira (web.dev).
+
+**8.2 Infinite scroll (descoberta contínua)** — NN/g: funciona SÓ para streams homogêneos de descoberta (feeds), onde o usuário consome sem comparar. NUNCA para tarefa com objetivo: impede comparar itens, voltar à posição, compartilhar URL e alcançar o footer. A11y: carregamento sem anúncio quebra leitores de tela — use `aria-live` e marcos de posição.
+
+**8.3 "Load More" (o meio-termo vencedor)** — Baymard: botão "carregar mais" supera infinite scroll E paginação quando bem-feito — velocidade de fluxo + controle do usuário (posição, bookmark). Custo: um clique. Padrão default para e-commerce/listagens.
+
+**8.4 Horizontal (galeria)** — `scroll-snap-type: x mandatory` no container + `scroll-snap-align: start` nos filhos. USE em portfólios, carrosséis, timelines, desktop-first. EVITE em conteúdo textual e mobile-primary. A11y obrigatória: navegação por setas, skip links para pular a região, autoplay pausável (W3C WAI Carousel).
+
+**8.5 Scrollytelling (narrativa scrubada)** — scroll position controla a timeline ("Snow Fall" do NYT, 2012). Stack: GSAP ScrollTrigger (scrub + pin + markers de debug) ou **Scrollama.js** (leve, IntersectionObserver, modelo por etapas — ideal para jornalismo). USE em investigativo long-form, dataviz progressiva, conteúdo educacional. EVITE em post comum, notícia urgente e conteúdo que muda sempre — o custo de produção é alto.
+
+**8.6 Fundo fixo (profundidade sem parallax)** — **`background-attachment: fixed` é proibido**: quebra 100% no iOS e dá jank no desktop. O jeito certo:
+
+```html
+<div style="position: fixed; inset: 0; z-index: -1;"><img src="bg.jpg" style="width:100%;height:100%;object-fit:cover"></div>
+<main style="position: relative;">conteúdo rola por cima</main>
+```
+
+**8.7 Reveals por viewport (scroll-triggered)** — IntersectionObserver, nunca listener de scroll. Só `transform` e `opacity`. Receitas em §1–§3.
+
+**8.8 Multi-direcional (canvas explorável)** — nicho de showcase criativo. WCAG 2.1: o conteúdo precisa funcionar SEM scroll bidimensional a 400% de zoom — alternativa unidirecional responsiva é obrigatória, não opcional. Pesa em usuários com limitações cognitivas e motoras.
+
+**Snap scrolling (complemento do §8.4/landing):** `scroll-snap-type: y mandatory` para seções full-page e mobile-first; **`proximity` em vez de `mandatory`** quando as alturas variam ou há leitura longa — snap forçado no meio de texto quebra o fluxo.
+
+## §9 Mobile & acessibilidade (os pisos)
+
+**Listeners passivos** (previnem jank de toque; o evento `scroll` já é passivo por padrão):
+
+```js
+el.addEventListener("touchstart", fn, { passive: true });
+el.addEventListener("wheel", fn, { passive: true });
+```
+
+**`100vh` mente no iOS** (o Safari calcula pelo viewport máximo, ignorando a barra do navegador):
+
+```js
+const setVH = () => document.documentElement.style.setProperty("--vh", window.innerHeight * 0.01 + "px");
+addEventListener("resize", setVH); setVH();
+```
+```css
+.hero { height: calc(var(--vh, 1vh) * 100); }
+```
+
+**Pisos WCAG 2.1 (requisitos, não cortesias):**
+- `prefers-reduced-motion` em qualquer animação — movimento parallax/scrub é nocivo a pessoas com distúrbios vestibulares;
+- teclado funcional em toda interação de scroll (setas em carrosséis, skip links em regiões horizontais, autoplay pausável);
+- leitores de tela: conteúdo carregado dinamicamente (infinite scroll/load more) anunciado via `aria-live`;
+- zoom 400%: nada pode exigir scroll bidimensional;
+- **testar em device real** — o DevTools não simula o viewport do iOS nem o comportamento de toque.
