@@ -14,9 +14,18 @@ page.on("pageerror", (e) => erros.push(String(e)));
 await page.goto(URL, { waitUntil: "networkidle" });
 await page.waitForTimeout(900);
 await page.screenshot({ path: join(ROOT, "tools/out/landing-hero.png") });
-await page.evaluate(() => document.getElementById("cases").scrollIntoView());
+await page.evaluate(() => {
+  const w = document.getElementById("cases");
+  window.scrollTo(0, w.offsetTop + (w.offsetHeight - innerHeight) * 0.45);
+});
 await page.waitForTimeout(900);
 await page.screenshot({ path: join(ROOT, "tools/out/landing-cases.png") });
+await page.evaluate(() => {
+  const w = document.getElementById("cases");
+  window.scrollTo(0, w.offsetTop + (w.offsetHeight - innerHeight) * 0.85);
+});
+await page.waitForTimeout(900);
+await page.screenshot({ path: join(ROOT, "tools/out/landing-cases2.png") });
 await page.evaluate(() => {
   const w = document.getElementById("maquina");
   window.scrollTo(0, w.offsetTop + (w.offsetHeight - innerHeight) * 0.55);

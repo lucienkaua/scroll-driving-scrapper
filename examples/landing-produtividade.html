@@ -126,33 +126,62 @@
     color: transparent; -webkit-text-stroke: 1.5px var(--neon); text-stroke: 1.5px var(--neon);
   }
   .letreiro span.cheio { color: var(--laranja); -webkit-text-stroke: 0; text-shadow: 0 0 40px var(--glow); }
-  @supports (animation-timeline: scroll()) {
-    .letreiro .trilho { animation: desliza linear both; animation-timeline: scroll(root); }
-    @keyframes desliza { from { transform: translateX(4%); } to { transform: translateX(-32%); } }
+  @supports (animation-timeline: view()) {
+    /* timeline do proprio letreiro: atravessa COMPLETO enquanto cruza a viewport */
+    .letreiro .trilho { animation: desliza linear both; animation-timeline: view(); animation-range: cover 0% cover 100%; }
+    @keyframes desliza { from { transform: translateX(6%); } to { transform: translateX(-52%); } }
   }
 
-  /* ===== cases (secao clara, editorial) ===== */
-  .cases { background: var(--branco); color: var(--tinta); padding: 110px 0 120px; }
-  .cases .eyebrow { color: var(--laranja-escuro); }
-  .cases .eyebrow::before { background: var(--laranja); box-shadow: none; }
+  /* ===== cases: deck horizontal PINADO (scrub nativo, avanca e volta) ===== */
   h2 { font: 700 clamp(30px, 3.6vw, 46px)/1.1 var(--display); letter-spacing: -.015em; margin: 18px 0 14px; }
-  .cases p.intro { color: var(--cinza-claro); max-width: 540px; margin-bottom: 64px; }
-  .case { display: grid; grid-template-columns: 110px 1fr 300px; gap: 40px; padding: 44px 0; border-top: 1px solid #e4dfd5; align-items: center; }
-  .case:last-of-type { border-bottom: 1px solid #e4dfd5; }
-  .case .idx { font: 700 clamp(44px, 4.6vw, 64px)/1 var(--display); color: transparent; -webkit-text-stroke: 1.3px var(--laranja); }
-  .case h3 { font: 700 24px/1.2 var(--display); margin-bottom: 8px; }
-  .case .tag { font: 500 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--laranja-escuro); }
-  .case p { font-size: 15px; color: var(--cinza-claro); max-width: 480px; margin-top: 10px; }
-  .case .resultado { font: 500 13.5px/1.9 var(--mono); }
-  .case .resultado b { color: var(--laranja-escuro); font-weight: 500; }
-  .case .esquema { justify-self: end; }
-  .case .esquema svg { width: 150px; height: auto; }
-  .case .esquema path.fio { stroke-dasharray: 1; stroke-dashoffset: 1; }
-  .case.in .esquema path.fio { stroke-dashoffset: 0; transition: stroke-dashoffset 1s var(--ease) .15s; }
-  @supports (animation-timeline: view()) {
-    @media (prefers-reduced-motion: no-preference) {
-      .case .esquema path.fio { animation: desenha linear both; animation-timeline: view(); animation-range: entry 10% entry 70%; transition: none; }
-      @keyframes desenha { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+  .deck-wrap { position: relative; background: radial-gradient(70% 90% at 85% 10%, rgba(255, 106, 0, .09), transparent 60%), var(--preto); border-top: 1px solid var(--linha-dark); border-bottom: 1px solid var(--linha-dark); }
+  .deck { padding: 90px 0; }
+  .trilho-deck { display: flex; flex-direction: column; gap: 28px; padding: 0 24px; }
+  .painel-intro { max-width: 460px; flex: none; }
+  .painel-intro p { color: var(--cinza); margin-top: 6px; }
+  .painel-intro .dica { display: inline-flex; align-items: center; gap: 10px; margin-top: 26px; font: 500 12px var(--mono); letter-spacing: .18em; color: var(--laranja); }
+  .painel-intro .dica svg { width: 26px; }
+
+  .card { position: relative; flex: none; width: min(680px, 86vw); border: 1px solid var(--neon); border-radius: 18px; padding: 34px 36px 30px; overflow: clip; background: radial-gradient(120% 90% at 100% 0%, rgba(255, 106, 0, .16), transparent 55%), var(--carvao); box-shadow: 0 0 0 1px rgba(255, 138, 42, .14), 0 0 44px rgba(255, 106, 0, .13), 0 24px 60px rgba(0, 0, 0, .5); }
+  .card .marca { position: absolute; right: 18px; top: 2px; font: 700 150px/1 var(--display); color: transparent; -webkit-text-stroke: 1.2px rgba(255, 138, 42, .35); pointer-events: none; }
+  .card .tag { font: 500 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--laranja); }
+  .card h3 { font: 700 26px/1.15 var(--display); margin: 10px 0 8px; }
+  .card > p { font-size: 14.5px; color: var(--cinza); max-width: 420px; }
+  .card .corpo { display: grid; grid-template-columns: 1fr 250px; gap: 26px; align-items: end; margin-top: 22px; }
+  .card .antes-depois { font: 700 clamp(26px, 2.6vw, 34px)/1.15 var(--display); }
+  .card .antes-depois em { font-style: normal; color: var(--laranja); text-shadow: 0 0 18px var(--glow); }
+  .card .antes-depois small { display: block; margin-top: 8px; font: 500 12px/1.6 var(--mono); color: var(--cinza); letter-spacing: .04em; }
+  .card .esquema svg { width: 100%; height: auto; }
+  .card .fio { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1s var(--ease) .15s; }
+  .card.in .fio { stroke-dashoffset: 0; }
+
+  /* card invertido: explosao de cor */
+  .card.invertido { background: radial-gradient(120% 90% at 0% 100%, rgba(255, 255, 255, .22), transparent 55%), var(--laranja); border-color: #ffb067; color: var(--preto); box-shadow: 0 0 0 1px rgba(255, 176, 103, .5), 0 0 70px rgba(255, 106, 0, .35), 0 24px 60px rgba(0, 0, 0, .45); }
+  .card.invertido .tag { color: var(--preto); }
+  .card.invertido .marca { -webkit-text-stroke: 1.2px rgba(10, 10, 11, .3); }
+  .card.invertido > p { color: rgba(10, 10, 11, .72); }
+  .card.invertido .antes-depois em { color: #fff; text-shadow: 0 0 18px rgba(255, 255, 255, .5); }
+  .card.invertido .antes-depois small { color: rgba(10, 10, 11, .65); }
+
+  .deck-progress { display: none; }
+
+  /* pin + scrub so quando ha suporte, ponteiro desktop e movimento permitido */
+  @media (min-width: 901px) and (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .deck-wrap { height: 330vh; view-timeline: --deck block; }
+      .deck { position: sticky; top: 0; height: 100svh; display: flex; align-items: center; overflow: clip; padding: 0; }
+      .trilho-deck { flex-direction: row; align-items: center; gap: 44px; width: max-content; padding: 0 8vw 0 max(24px, calc((100vw - 1160px) / 2)); will-change: transform; animation: deck-anda linear both; animation-timeline: --deck; animation-range: contain 0% contain 100%; }
+      @keyframes deck-anda { from { transform: translateX(0); } to { transform: translateX(calc(-100% + 100vw)); } }
+      .card { width: 640px; }
+      /* esquematicos se desenham na janela de cada card */
+      .card .fio { transition: none; animation: 1s linear both; animation-timeline: --deck; animation-range: contain 0% contain 100%; }
+      .card:nth-of-type(1) .fio { animation-name: d1; } @keyframes d1 { 0%, 6% { stroke-dashoffset: 1; } 30% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 0; } }
+      .card:nth-of-type(2) .fio { animation-name: d2; } @keyframes d2 { 0%, 36% { stroke-dashoffset: 1; } 60% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 0; } }
+      .card:nth-of-type(3) .fio { animation-name: d3; } @keyframes d3 { 0%, 64% { stroke-dashoffset: 1; } 88% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 0; } }
+      /* barra de progresso do deck */
+      .deck-progress { display: block; position: absolute; left: 50%; bottom: 42px; transform: translateX(-50%); width: 180px; height: 2px; background: var(--linha-dark); }
+      .deck-progress i { position: absolute; inset: 0; background: var(--laranja); box-shadow: 0 0 10px var(--glow); transform-origin: left; transform: scaleX(0); animation: deck-prog linear both; animation-timeline: --deck; animation-range: contain 0% contain 100%; }
+      @keyframes deck-prog { to { transform: scaleX(1); } }
     }
   }
 
@@ -350,69 +379,97 @@
     </div>
   </div>
 
-  <!-- ====== CASES editoriais com esquematicos ====== -->
-  <section class="cases" id="cases">
-    <div class="wrap">
-      <div class="rv">
-        <span class="eyebrow">Cases de sucesso</span>
-        <h2>O antes e o depois de três operações</h2>
-        <p class="intro">Cada frente começa num gargalo real, reclamado por quem vive o processo — e termina medida em horas e dias recuperados.</p>
-      </div>
+  <!-- ====== CASES: deck pinado que avanca e volta com o scroll ====== -->
+  <section class="deck-wrap" id="cases" aria-label="Cases de sucesso">
+    <div class="deck">
+      <div class="trilho-deck">
 
-      <article class="case rv">
-        <div class="idx" aria-hidden="true">01</div>
-        <div>
+        <div class="painel-intro">
+          <span class="eyebrow">Cases de sucesso</span>
+          <h2>O antes e o depois de três operações</h2>
+          <p>Cada frente começa num gargalo real — e termina medida em horas e dias recuperados. Role: a página trava aqui até o último case.</p>
+          <span class="dica">ROLE PARA AVANÇAR
+            <svg viewBox="0 0 26 10" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M0 5h22m0 0-5-4m5 4-5 4"/></svg>
+          </span>
+        </div>
+
+        <article class="card">
+          <span class="marca" aria-hidden="true">01</span>
           <span class="tag">Compras</span>
           <h3>Fluxo de Compras 2.0</h3>
-          <p>Requisições viajavam por e-mail e planilha, sem rastro. Hoje o fluxo cota com fornecedores, compara propostas e aciona a alçada certa — sozinho.</p>
-          <p class="resultado">ciclo de compra: <b>9 dias → 5,6 dias</b> · retrabalho: <b>−72%</b></p>
-        </div>
-        <div class="esquema" aria-hidden="true">
-          <svg viewBox="0 0 150 110" fill="none" stroke="#c2410c" stroke-width="1.6">
-            <rect x="6" y="8" width="42" height="26" rx="6"/><rect x="102" y="8" width="42" height="26" rx="6"/>
-            <rect x="54" y="74" width="42" height="26" rx="6" stroke="#ff6a00" stroke-width="2"/>
-            <path class="fio" pathLength="1" d="M27 34 C 27 60, 75 50, 75 74"/>
-            <path class="fio" pathLength="1" d="M123 34 C 123 60, 75 50, 75 74"/>
-            <circle cx="75" cy="87" r="2.6" fill="#ff6a00" stroke="none"/>
-          </svg>
-        </div>
-      </article>
+          <p>Requisições viajavam por e-mail e planilha, sem rastro. Hoje o fluxo cota, compara propostas e aciona a alçada certa — sozinho.</p>
+          <div class="corpo">
+            <div class="antes-depois">9 dias <em>→ 5,6 dias</em><small>ciclo de compra · retrabalho de cotação −72%</small></div>
+            <div class="esquema" aria-hidden="true">
+              <svg viewBox="0 0 250 170" fill="none" stroke="#ff8a2a" stroke-width="1.6">
+                <g font-family="IBM Plex Mono" font-size="9" fill="#9b958a" stroke="none">
+                  <text x="14" y="22">FORNECEDOR A</text><text x="14" y="70">FORNECEDOR B</text><text x="14" y="118">FORNECEDOR C</text>
+                  <text x="176" y="150">PEDIDO ✓</text>
+                </g>
+                <rect class="fio" pathLength="1" x="10" y="28" width="86" height="22" rx="5"/>
+                <rect class="fio" pathLength="1" x="10" y="76" width="86" height="22" rx="5"/>
+                <rect class="fio" pathLength="1" x="10" y="124" width="86" height="22" rx="5"/>
+                <path class="fio" pathLength="1" d="M96 39 C 130 39, 130 80, 158 80 M96 87 H 158 M96 135 C 130 135, 130 94, 158 94"/>
+                <circle class="fio" pathLength="1" cx="182" cy="87" r="24" stroke="#ff6a00" stroke-width="2"/>
+                <path class="fio" pathLength="1" d="M172 87 l7 7 l12 -14" stroke="#ff6a00" stroke-width="2"/>
+                <path class="fio" pathLength="1" d="M182 111 V 132" stroke-dasharray="1"/>
+              </svg>
+            </div>
+          </div>
+        </article>
 
-      <article class="case rv">
-        <div class="idx" aria-hidden="true">02</div>
-        <div>
+        <article class="card invertido">
+          <span class="marca" aria-hidden="true">02</span>
           <span class="tag">Suporte</span>
           <h3>Painel de Suporte Técnico</h3>
-          <p>Chamados chegavam por quatro canais e se perdiam. Centralizamos em um painel com triagem automática e prioridade por impacto na operação.</p>
-          <p class="resultado">primeira resposta: <b>4h → 22min</b> · SLA: <b>99,4%</b></p>
-        </div>
-        <div class="esquema" aria-hidden="true">
-          <svg viewBox="0 0 150 110" fill="none" stroke="#c2410c" stroke-width="1.6">
-            <rect x="8" y="10" width="56" height="12" rx="4"/><rect x="8" y="30" width="56" height="12" rx="4"/>
-            <rect x="8" y="50" width="56" height="12" rx="4"/><rect x="8" y="70" width="56" height="12" rx="4"/>
-            <path class="fio" pathLength="1" d="M64 16 H 84 C 100 16, 100 46, 108 46 M64 36 C 84 36, 92 46, 108 46 M64 56 C 84 56, 92 46, 108 46 M64 76 H 84 C 100 76, 100 46, 108 46"/>
-            <rect x="108" y="30" width="34" height="34" rx="8" stroke="#ff6a00" stroke-width="2"/>
-            <circle cx="125" cy="47" r="3" fill="#ff6a00" stroke="none"/>
-          </svg>
-        </div>
-      </article>
+          <p>Chamados chegavam por quatro canais e se perdiam. Centralizamos com triagem automática e prioridade por impacto na operação.</p>
+          <div class="corpo">
+            <div class="antes-depois">4h <em>→ 22min</em><small>primeira resposta · SLA cumprido 99,4%</small></div>
+            <div class="esquema" aria-hidden="true">
+              <svg viewBox="0 0 250 170" fill="none" stroke="#0a0a0b" stroke-width="1.7">
+                <g font-family="IBM Plex Mono" font-size="9" fill="rgba(10,10,11,.75)" stroke="none">
+                  <text x="10" y="18">EMAIL</text><text x="10" y="58">CHAT</text><text x="10" y="98">TELEFONE</text><text x="10" y="138">CORREDOR</text>
+                  <text x="176" y="30">PAINEL</text>
+                </g>
+                <rect class="fio" pathLength="1" x="8" y="24" width="60" height="18" rx="4"/>
+                <rect class="fio" pathLength="1" x="8" y="64" width="60" height="18" rx="4"/>
+                <rect class="fio" pathLength="1" x="8" y="104" width="60" height="18" rx="4"/>
+                <rect class="fio" pathLength="1" x="8" y="144" width="60" height="18" rx="4"/>
+                <path class="fio" pathLength="1" d="M68 33 C 110 33, 110 86, 140 86 M68 73 C 104 73, 110 86, 140 86 M68 113 C 104 113, 110 86, 140 86 M68 153 C 110 153, 110 86, 140 86"/>
+                <rect class="fio" pathLength="1" x="140" y="40" width="96" height="92" rx="10" stroke-width="2"/>
+                <path class="fio" pathLength="1" d="M154 118 V 96 M172 118 V 82 M190 118 V 68 M208 118 V 58" stroke-width="3"/>
+                <path class="fio" pathLength="1" d="M152 54 H 224" stroke-dasharray="1"/>
+              </svg>
+            </div>
+          </div>
+        </article>
 
-      <article class="case rv">
-        <div class="idx" aria-hidden="true">03</div>
-        <div>
+        <article class="card">
+          <span class="marca" aria-hidden="true">03</span>
           <span class="tag">Cadastros</span>
           <h3>Importador de Fornecedores</h3>
           <p>Cadastrar um fornecedor exigia redigitar os mesmos dados em três sistemas. O importador valida documentos e replica tudo em um envio.</p>
-          <p class="resultado">tempo por cadastro: <b>35min → 4min</b> · erros: <b>zero</b></p>
-        </div>
-        <div class="esquema" aria-hidden="true">
-          <svg viewBox="0 0 150 110" fill="none" stroke="#c2410c" stroke-width="1.6">
-            <rect x="8" y="40" width="40" height="30" rx="6" stroke="#ff6a00" stroke-width="2"/>
-            <path class="fio" pathLength="1" d="M48 48 C 76 48, 76 20, 102 20 M48 55 H 102 M48 62 C 76 62, 76 90, 102 90"/>
-            <rect x="102" y="8" width="40" height="24" rx="5"/><rect x="102" y="43" width="40" height="24" rx="5"/><rect x="102" y="78" width="40" height="24" rx="5"/>
-          </svg>
-        </div>
-      </article>
+          <div class="corpo">
+            <div class="antes-depois">35min <em>→ 4min</em><small>tempo por cadastro · erros de digitação: zero</small></div>
+            <div class="esquema" aria-hidden="true">
+              <svg viewBox="0 0 250 170" fill="none" stroke="#ff8a2a" stroke-width="1.6">
+                <g font-family="IBM Plex Mono" font-size="9" fill="#9b958a" stroke="none">
+                  <text x="12" y="60">1 ENVIO</text><text x="196" y="22">ERP</text><text x="186" y="82">FISCAL</text><text x="180" y="142">COMPRAS</text>
+                </g>
+                <rect class="fio" pathLength="1" x="10" y="66" width="64" height="44" rx="7" stroke="#ff6a00" stroke-width="2"/>
+                <path class="fio" pathLength="1" d="M24 88 l7 7 l14 -16" stroke="#ff6a00" stroke-width="2"/>
+                <path class="fio" pathLength="1" d="M74 80 C 120 80, 120 30, 190 30 M74 88 H 190 M74 96 C 120 96, 120 150, 190 150"/>
+                <rect class="fio" pathLength="1" x="190" y="18" width="48" height="24" rx="5"/>
+                <rect class="fio" pathLength="1" x="190" y="76" width="48" height="24" rx="5"/>
+                <rect class="fio" pathLength="1" x="190" y="136" width="48" height="24" rx="5"/>
+                <circle class="fio" pathLength="1" cx="130" cy="88" r="12" stroke-dasharray="1"/>
+              </svg>
+            </div>
+          </div>
+        </article>
+
+      </div>
+      <div class="deck-progress" aria-hidden="true"><i></i></div>
     </div>
   </section>
 
@@ -546,7 +603,7 @@
   var io = new IntersectionObserver(function (es) {
     es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
   }, { threshold: 0.2 });
-  document.querySelectorAll(".rv").forEach(function (el) {
+  document.querySelectorAll(".rv, .deck-wrap .card").forEach(function (el) {
     if (reduz) el.classList.add("in"); else io.observe(el);
   });
 
