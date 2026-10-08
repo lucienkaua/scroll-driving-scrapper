@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Produtividade Digital — Processos que rodam sozinhos</title>
+<meta name="description" content="A equipe que transforma processo manual em fluxo automatizado. Cases de compras, suporte e cadastros — e a porta aberta para a próxima frente.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --preto: #0b0b0c;
+    --carvao: #131315;
+    --linha-dark: #232326;
+    --branco: #f7f6f2;
+    --tinta: #16130f;
+    --cinza: #9a958b;
+    --cinza-claro: #6f6a61;
+    --laranja: #ff6a00;
+    --neon: #ff8a2a;
+    --laranja-txt-claro: #c2410c; /* laranja legivel sobre branco */
+    --glow: rgba(255, 106, 0, .32);
+    --ease: cubic-bezier(.22, 1, .36, 1);
+    --display: "Space Grotesk", sans-serif;
+    --corpo: "Inter", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", monospace;
+  }
+  * { margin: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--preto); color: var(--branco);
+    font: 16px/1.65 var(--corpo);
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: var(--laranja); color: var(--preto); }
+  img { max-width: 100%; }
+  a { color: inherit; }
+
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  .eyebrow {
+    font: 500 12px/1 var(--mono); letter-spacing: .22em; text-transform: uppercase;
+    color: var(--laranja); display: inline-flex; align-items: center; gap: 10px;
+  }
+  .eyebrow::before { content: ""; width: 22px; height: 1px; background: var(--neon); box-shadow: 0 0 8px var(--glow); }
+
+  .skip {
+    position: absolute; left: -999px; top: 8px; z-index: 99;
+    background: var(--laranja); color: var(--preto); padding: 10px 16px;
+    font: 600 14px var(--corpo); border-radius: 6px; text-decoration: none;
+  }
+  .skip:focus { left: 8px; }
+
+  /* ===== assinatura: linha de producao (acende com o scroll) ===== */
+  .prodline {
+    position: fixed; left: 28px; top: 0; bottom: 0; width: 2px;
+    background: var(--linha-dark); z-index: 5; pointer-events: none;
+  }
+  .prodline i {
+    position: absolute; inset: 0; display: block;
+    background: linear-gradient(180deg, var(--laranja), var(--neon));
+    box-shadow: 0 0 12px var(--glow), 0 0 32px var(--glow);
+    transform-origin: top; transform: scaleY(0);
+  }
+  @supports (animation-timeline: scroll()) {
+    .prodline i { animation: acende linear both; animation-timeline: scroll(root); }
+    @keyframes acende { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+  }
+  @media (max-width: 900px) { .prodline { display: none; } }
+
+  /* ===== nav ===== */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 10;
+    background: rgba(11, 11, 12, .82); backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--linha-dark);
+  }
+  .nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .logo { font: 700 18px var(--display); letter-spacing: .02em; text-decoration: none; }
+  .logo b { color: var(--laranja); }
+  .nav a.cta-mini {
+    font: 600 13px var(--corpo); text-decoration: none; padding: 9px 18px;
+    border: 1px solid var(--neon); border-radius: 999px; color: var(--branco);
+    box-shadow: inset 0 0 0 0 transparent, 0 0 14px rgba(255, 106, 0, .18);
+    transition: background-color .12s ease, color .12s ease, box-shadow .12s ease;
+  }
+  .nav a.cta-mini:hover { background: var(--laranja); color: var(--preto); box-shadow: 0 0 22px var(--glow); }
+
+  /* ===== reveals (IO adiciona .in) ===== */
+  .rv { opacity: 0; transform: translateY(26px); }
+  .in { opacity: 1; transform: none; transition: opacity .48s var(--ease), transform .48s var(--ease); }
+
+  /* ===== hero ===== */
+  .hero { position: relative; min-height: 100svh; display: flex; align-items: center; overflow: clip; padding: 120px 0 80px; }
+  .hero-glow {
+    position: absolute; right: -180px; top: -120px; width: 720px; height: 720px; z-index: 0;
+    background: radial-gradient(closest-side, rgba(255, 106, 0, .16), transparent 70%);
+  }
+  @supports (animation-timeline: scroll()) {
+    .hero-glow { animation: flutua linear both; animation-timeline: scroll(root); animation-range: 0 140vh; }
+    @keyframes flutua { to { transform: translateY(-180px); } } /* parallax ~0.25x */
+  }
+  .hero .wrap { position: relative; z-index: 1; display: grid; grid-template-columns: 1.15fr .85fr; gap: 64px; align-items: center; }
+  h1 {
+    font: 700 clamp(40px, 5.2vw, 64px)/1.06 var(--display); letter-spacing: -.02em;
+    margin: 20px 0 22px; text-wrap: balance;
+  }
+  h1 .neon { color: var(--laranja); text-shadow: 0 0 24px var(--glow); }
+  .hero p.sub { font-size: 18px; color: var(--cinza); max-width: 520px; margin-bottom: 34px; }
+  .cta-row { display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn {
+    display: inline-block; text-decoration: none; font: 600 15px var(--corpo);
+    padding: 15px 28px; border-radius: 10px; will-change: transform;
+    transition: transform .12s ease, box-shadow .12s ease, background-color .12s ease, color .12s ease;
+  }
+  .btn:active { transform: scale(.98); }
+  .btn-solido { background: var(--laranja); color: var(--preto); box-shadow: 0 0 0 1px var(--neon), 0 6px 28px var(--glow); }
+  .btn-solido:hover { transform: translateY(-2px); box-shadow: 0 0 0 1px var(--neon), 0 10px 40px var(--glow); }
+  .btn-borda { border: 1px solid var(--linha-dark); color: var(--branco); }
+  .btn-borda:hover { border-color: var(--neon); box-shadow: 0 0 18px rgba(255, 106, 0, .2); transform: translateY(-2px); }
+
+  /* console do pipeline (a tese do hero) */
+  .console {
+    border: 1px solid var(--neon); border-radius: 14px; background: var(--carvao);
+    box-shadow: 0 0 0 1px rgba(255, 138, 42, .15), 0 0 34px rgba(255, 106, 0, .14), 0 30px 60px rgba(0, 0, 0, .5);
+    overflow: hidden;
+  }
+  .console-top {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px; border-bottom: 1px solid var(--linha-dark);
+    font: 500 11px var(--mono); letter-spacing: .14em; color: var(--cinza); text-transform: uppercase;
+  }
+  .live { display: inline-flex; align-items: center; gap: 7px; color: var(--laranja); }
+  .live i { width: 7px; height: 7px; border-radius: 50%; background: var(--laranja); box-shadow: 0 0 10px var(--glow); }
+  @media (prefers-reduced-motion: no-preference) { .live i { animation: pulsa 1.4s ease-in-out infinite; } }
+  @keyframes pulsa { 50% { opacity: .3; } }
+  .console-body { padding: 18px 16px 20px; font: 400 13px/2.1 var(--mono); color: var(--cinza); }
+  .console-body b { color: var(--branco); font-weight: 500; }
+  .ok { color: var(--laranja); }
+  .console-body .fila { opacity: 0; transform: translateX(-8px); }
+  .in .fila { opacity: 1; transform: none; transition: opacity .4s var(--ease), transform .4s var(--ease); }
+  .in .fila:nth-child(2) { transition-delay: .08s; } .in .fila:nth-child(3) { transition-delay: .16s; }
+  .in .fila:nth-child(4) { transition-delay: .24s; } .in .fila:nth-child(5) { transition-delay: .32s; }
+  .in .fila:nth-child(6) { transition-delay: .4s; }
+
+  /* ===== metricas ===== */
+  .metricas { border-top: 1px solid var(--linha-dark); border-bottom: 1px solid var(--linha-dark); background: var(--carvao); }
+  .metricas .wrap { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; padding-top: 52px; padding-bottom: 52px; }
+  .met strong { display: block; font: 700 clamp(30px, 3.4vw, 44px)/1 var(--display); color: var(--branco); }
+  .met strong em { font-style: normal; color: var(--laranja); }
+  .met span { display: block; margin-top: 10px; font: 400 12.5px/1.5 var(--mono); color: var(--cinza); }
+
+  /* ===== cases (secao clara) ===== */
+  .cases { background: var(--branco); color: var(--tinta); padding: 110px 0 120px; }
+  .cases .eyebrow { color: var(--laranja-txt-claro); }
+  .cases .eyebrow::before { background: var(--laranja); box-shadow: none; }
+  h2 { font: 700 clamp(30px, 3.6vw, 44px)/1.12 var(--display); letter-spacing: -.015em; margin: 18px 0 14px; }
+  .cases p.intro { color: var(--cinza-claro); max-width: 560px; margin-bottom: 56px; }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .card {
+    background: #fff; border: 1px solid #e8e4dc; border-radius: 14px; padding: 26px 24px 24px;
+    display: flex; flex-direction: column; gap: 12px; position: relative;
+    transition: transform .14s ease, box-shadow .14s ease, border-color .14s ease;
+  }
+  .card:hover { transform: translateY(-4px); border-color: var(--neon); box-shadow: 0 0 0 1px rgba(255, 138, 42, .35), 0 0 28px rgba(255, 106, 0, .22), 0 18px 40px rgba(22, 19, 15, .08); }
+  .card .tag { font: 500 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--laranja-txt-claro); }
+  .card h3 { font: 700 21px/1.25 var(--display); }
+  .card p { font-size: 14.5px; color: var(--cinza-claro); }
+  .card .resultado {
+    margin-top: auto; padding-top: 16px; border-top: 1px dashed #e2ddd2;
+    font: 500 13.5px/1.5 var(--mono); color: var(--tinta);
+  }
+  .card .resultado b { color: var(--laranja-txt-claro); font-weight: 500; }
+  .in-stagger .card { opacity: 0; transform: translateY(26px); }
+  .in-stagger.in .card { opacity: 1; transform: none; transition: opacity .5s var(--ease), transform .5s var(--ease); }
+  .in-stagger.in .card:nth-child(2) { transition-delay: .09s; }
+  .in-stagger.in .card:nth-child(3) { transition-delay: .18s; }
+
+  /* ===== processo (sequencia real -> numeracao justificada) ===== */
+  .processo { padding: 110px 0 120px; }
+  .processo .wrap { display: grid; grid-template-columns: .9fr 1.1fr; gap: 72px; align-items: start; }
+  .processo .fixa { position: sticky; top: 110px; }
+  .processo .fixa p { color: var(--cinza); max-width: 380px; margin-top: 14px; }
+  .passo {
+    position: relative; padding: 26px 0 30px 64px; border-bottom: 1px solid var(--linha-dark);
+  }
+  .passo:last-child { border-bottom: 0; }
+  .passo .num {
+    position: absolute; left: 0; top: 26px; width: 42px; height: 42px;
+    display: grid; place-items: center; border: 1px solid var(--neon); border-radius: 10px;
+    font: 500 14px var(--mono); color: var(--laranja);
+    box-shadow: 0 0 16px rgba(255, 106, 0, .18), inset 0 0 10px rgba(255, 106, 0, .08);
+  }
+  .passo h3 { font: 700 20px var(--display); margin-bottom: 8px; }
+  .passo p { color: var(--cinza); font-size: 15px; max-width: 520px; }
+  .passo .prazo { display: inline-block; margin-top: 12px; font: 500 12px var(--mono); letter-spacing: .1em; color: var(--laranja); }
+
+  /* ===== marquee de capacidades (pausavel) ===== */
+  .faixa { border-top: 1px solid var(--linha-dark); border-bottom: 1px solid var(--linha-dark); padding: 26px 0; overflow: clip; background: var(--carvao); }
+  .marquee { display: flex; gap: 48px; width: max-content; }
+  .marquee span { font: 500 15px var(--mono); color: var(--cinza); white-space: nowrap; }
+  .marquee span::after { content: "·"; color: var(--laranja); margin-left: 48px; }
+  @media (prefers-reduced-motion: no-preference) {
+    .marquee { animation: anda 36s linear infinite; }
+    .faixa.rev .marquee { animation-direction: reverse; }
+    .faixa:hover .marquee { animation-play-state: paused; }
+  }
+  @keyframes anda { to { transform: translateX(-50%); } }
+  .faixa + .faixa { border-top: 0; }
+
+  /* ===== cta final ===== */
+  .cta-final { padding: 130px 0; }
+  .moldura {
+    position: relative; border: 1px solid var(--neon); border-radius: 20px;
+    background: linear-gradient(180deg, rgba(255, 106, 0, .07), transparent 55%), var(--carvao);
+    box-shadow: 0 0 0 1px rgba(255, 138, 42, .14), 0 0 60px rgba(255, 106, 0, .12);
+    padding: 72px 56px; text-align: center;
+  }
+  .moldura h2 { max-width: 640px; margin-left: auto; margin-right: auto; }
+  .moldura p { color: var(--cinza); max-width: 520px; margin: 0 auto 36px; }
+  .moldura .cta-row { justify-content: center; }
+
+  footer { border-top: 1px solid var(--linha-dark); padding: 34px 0 44px; }
+  footer .wrap { display: flex; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
+  footer small { font: 400 12px/1.6 var(--mono); color: var(--cinza-claro); max-width: 560px; }
+  footer a { color: var(--cinza); text-decoration-color: var(--laranja); }
+
+  :is(a, button):focus-visible { outline: 2px solid var(--laranja); outline-offset: 3px; border-radius: 6px; }
+
+  @media (max-width: 900px) {
+    .hero .wrap, .processo .wrap { grid-template-columns: 1fr; gap: 44px; }
+    .processo .fixa { position: static; }
+    .metricas .wrap { grid-template-columns: repeat(2, 1fr); }
+    .cards { grid-template-columns: 1fr; }
+    .moldura { padding: 56px 24px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .rv, .in-stagger .card, .console-body .fila { opacity: 1 !important; transform: none !important; transition: none !important; }
+    .prodline i { transform: scaleY(1); animation: none; }
+    .hero-glow { animation: none; }
+    .btn, .card { transition: none; }
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#conteudo">Pular para o conteúdo</a>
+
+<div class="prodline" aria-hidden="true"><i></i></div>
+
+<nav class="nav" aria-label="Principal">
+  <div class="wrap">
+    <a class="logo" href="#"><b>▮</b> Produtividade<b>Digital</b></a>
+    <a class="cta-mini" href="#abrir-frente">Abrir uma frente</a>
+  </div>
+</nav>
+
+<main id="conteudo">
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="wrap">
+      <div class="rv">
+        <span class="eyebrow">Equipe de Produtividade Digital</span>
+        <h1>Processo manual é fila.<br>A gente transforma em <span class="neon">fluxo</span>.</h1>
+        <p class="sub">Automatizamos o trabalho repetitivo de compras, suporte e cadastros — devolvendo horas para as pessoas e previsibilidade para a operação.</p>
+        <div class="cta-row">
+          <a class="btn btn-solido magnet" href="#abrir-frente">Abrir uma frente com a gente</a>
+          <a class="btn btn-borda" href="#cases">Ver os cases</a>
+        </div>
+      </div>
+      <div class="rv" style="transition-delay:.12s">
+        <div class="console" role="img" aria-label="Console ilustrativo de um fluxo de compras automatizado em execução">
+          <div class="console-top"><span>pipeline · fluxo-de-compras</span><span class="live"><i></i>rodando agora</span></div>
+          <div class="console-body">
+            <div class="fila"><b>09:12</b> requisição #4821 recebida <span class="ok">✓</span></div>
+            <div class="fila"><b>09:12</b> orçamentos solicitados a 3 fornecedores <span class="ok">✓</span></div>
+            <div class="fila"><b>09:31</b> propostas comparadas · melhor preço selecionado <span class="ok">✓</span></div>
+            <div class="fila"><b>09:32</b> alçada de aprovação notificada <span class="ok">✓</span></div>
+            <div class="fila"><b>10:05</b> pedido emitido ao fornecedor <span class="ok">✓</span></div>
+            <div class="fila"><b>—</b> humano envolvido: <b>1 aprovação, 40 segundos</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MÉTRICAS -->
+  <section class="metricas" aria-label="Resultados em números">
+    <div class="wrap rv">
+      <div class="met"><strong><span class="conta" data-alvo="12">0</span><em>+</em></strong><span>processos automatizados de ponta a ponta</span></div>
+      <div class="met"><strong><span class="conta" data-alvo="4200">0</span><em>h</em></strong><span>devolvidas às equipes por ano</span></div>
+      <div class="met"><strong>−<span class="conta" data-alvo="38">0</span><em>%</em></strong><span>no ciclo médio de compras</span></div>
+      <div class="met"><strong><span class="conta" data-alvo="99">0</span><em>,4%</em></strong><span>de SLA no suporte interno</span></div>
+    </div>
+  </section>
+
+  <!-- CASES -->
+  <section class="cases" id="cases">
+    <div class="wrap">
+      <div class="rv">
+        <span class="eyebrow">Cases de sucesso</span>
+        <h2>O antes e o depois de três operações</h2>
+        <p class="intro">Cada frente começa num gargalo real, reclamado por quem vive o processo — e termina medida em horas e dias recuperados.</p>
+      </div>
+      <div class="cards in-stagger rv-group">
+        <article class="card">
+          <span class="tag">Compras</span>
+          <h3>Fluxo de Compras 2.0</h3>
+          <p>Requisições viajavam por e-mail e planilha, sem rastro. Hoje o fluxo cota com fornecedores, compara propostas e aciona a alçada certa — sozinho.</p>
+          <p class="resultado">ciclo de compra: <b>9 dias → 5,6 dias</b><br>retrabalho de cotação: <b>−72%</b></p>
+        </article>
+        <article class="card">
+          <span class="tag">Suporte</span>
+          <h3>Painel de Suporte Técnico</h3>
+          <p>Chamados chegavam por quatro canais e se perdiam. Centralizamos em um painel com triagem automática e prioridade por impacto na operação.</p>
+          <p class="resultado">primeira resposta: <b>4h → 22min</b><br>SLA cumprido: <b>99,4%</b></p>
+        </article>
+        <article class="card">
+          <span class="tag">Cadastros</span>
+          <h3>Importador de Fornecedores</h3>
+          <p>Cadastrar um fornecedor exigia redigitar os mesmos dados em três sistemas. O importador valida documentos e replica tudo em um envio.</p>
+          <p class="resultado">tempo por cadastro: <b>35min → 4min</b><br>erros de digitação: <b>zero</b></p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESSO -->
+  <section class="processo" aria-label="Como abrimos uma frente">
+    <div class="wrap">
+      <div class="fixa rv">
+        <span class="eyebrow">Como funciona</span>
+        <h2>Da dor ao fluxo em três passos</h2>
+        <p>Não chegamos com solução pronta: chegamos com perguntas. A área dona do processo participa do início ao fim — e fica com as chaves.</p>
+      </div>
+      <div>
+        <div class="passo rv">
+          <span class="num">01</span>
+          <h3>Diagnóstico na operação</h3>
+          <p>Sentamos com quem executa o processo hoje, mapeamos cada passo e medimos onde o tempo escorre. O gargalo define a frente, não o contrário.</p>
+          <span class="prazo">1–2 SEMANAS</span>
+        </div>
+        <div class="passo rv">
+          <span class="num">02</span>
+          <h3>Piloto rodando de verdade</h3>
+          <p>Automatizamos o trecho de maior impacto e colocamos em produção com um grupo pequeno. Medimos antes e depois — número que não melhora, a gente descarta.</p>
+          <span class="prazo">30 DIAS</span>
+        </div>
+        <div class="passo rv">
+          <span class="num">03</span>
+          <h3>Escala com a área dona</h3>
+          <p>O que provou valor vira padrão: treinamos a equipe, documentamos o fluxo e deixamos painéis de acompanhamento. A área opera; a gente evolui.</p>
+          <span class="prazo">CONTÍNUO</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CAPACIDADES -->
+  <div class="faixa" aria-hidden="true">
+    <div class="marquee">
+      <span>Automação de processos</span><span>Integrações entre sistemas</span><span>Dashboards e BI</span><span>IA aplicada à operação</span><span>RPA</span><span>APIs internas</span>
+      <span>Automação de processos</span><span>Integrações entre sistemas</span><span>Dashboards e BI</span><span>IA aplicada à operação</span><span>RPA</span><span>APIs internas</span>
+    </div>
+  </div>
+  <div class="faixa rev" aria-hidden="true">
+    <div class="marquee">
+      <span>Fluxos de aprovação</span><span>Pesquisas e radares</span><span>Portais de fornecedores</span><span>Gestão de contratos</span><span>Monitoramento de SLA</span><span>Extensões e ferramentas</span>
+      <span>Fluxos de aprovação</span><span>Pesquisas e radares</span><span>Portais de fornecedores</span><span>Gestão de contratos</span><span>Monitoramento de SLA</span><span>Extensões e ferramentas</span>
+    </div>
+  </div>
+
+  <!-- CTA FINAL -->
+  <section class="cta-final" id="abrir-frente">
+    <div class="wrap">
+      <div class="moldura rv">
+        <span class="eyebrow" style="justify-content:center">Oportunidade de negócio</span>
+        <h2>Tem um processo que merece rodar sozinho?</h2>
+        <p>Traga o gargalo — uma rotina que consome horas da sua equipe toda semana. Em duas semanas devolvemos um diagnóstico com o piloto desenhado.</p>
+        <div class="cta-row">
+          <a class="btn btn-solido magnet" href="mailto:produtividade@exemplo.com.br?subject=Quero%20abrir%20uma%20frente">Agendar diagnóstico</a>
+          <a class="btn btn-borda" href="#cases">Rever os cases</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <small>Página de demonstração construída com a skill <a href="https://github.com/lucienkaua/scroll-driving-scrapper/tree/main/skills/scroll-driven-sites">scroll-driven-sites</a>. Métricas ilustrativas.</small>
+    <small>Desenvolvido por <a href="https://github.com/lucienkaua">lucienkaua</a></small>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  var reduz = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // reveals por viewport: IntersectionObserver (nunca listener de scroll)
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.25 });
+  document.querySelectorAll(".rv, .rv-group").forEach(function (el) {
+    if (reduz) el.classList.add("in"); else io.observe(el);
+  });
+
+  // contadores: disparam uma vez ao entrar; reduced-motion mostra o valor final
+  function anima(el) {
+    var alvo = +el.dataset.alvo, t0 = null;
+    function tick(t) {
+      if (!t0) t0 = t;
+      var p = Math.min(1, (t - t0) / 900);
+      var eased = 1 - Math.pow(1 - p, 3); /* ~power3.out */
+      el.textContent = Math.round(alvo * eased).toLocaleString("pt-BR");
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+  var ioNum = new IntersectionObserver(function (es) {
+    es.forEach(function (e) {
+      if (e.isIntersecting) { anima(e.target); ioNum.unobserve(e.target); }
+    });
+  }, { threshold: 0.6 });
+  document.querySelectorAll(".conta").forEach(function (el) {
+    if (reduz) el.textContent = (+el.dataset.alvo).toLocaleString("pt-BR");
+    else ioNum.observe(el);
+  });
+
+  // botao magnetico: so desktop com ponteiro fino, raio curto, lerp suave
+  if (!reduz && matchMedia("(pointer: fine)").matches) {
+    document.querySelectorAll(".magnet").forEach(function (btn) {
+      var ax = 0, ay = 0, tx = 0, ty = 0, raf = null;
+      function loop() {
+        ax += (tx - ax) * 0.18; ay += (ty - ay) * 0.18;
+        btn.style.transform = "translate(" + ax.toFixed(2) + "px," + ay.toFixed(2) + "px)";
+        if (Math.abs(tx - ax) > .1 || Math.abs(ty - ay) > .1) raf = requestAnimationFrame(loop);
+        else raf = null;
+      }
+      btn.addEventListener("mousemove", function (ev) {
+        var r = btn.getBoundingClientRect();
+        tx = (ev.clientX - r.left - r.width / 2) * 0.18;
+        ty = (ev.clientY - r.top - r.height / 2) * 0.3;
+        if (!raf) raf = requestAnimationFrame(loop);
+      }, { passive: true });
+      btn.addEventListener("mouseleave", function () {
+        tx = 0; ty = 0;
+        if (!raf) raf = requestAnimationFrame(loop);
+      }, { passive: true });
+    });
+  }
+})();
+</script>
+</body>
+</html>
