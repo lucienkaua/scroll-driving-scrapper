@@ -22,7 +22,7 @@ await page.waitForTimeout(900);
 await page.screenshot({ path: join(ROOT, "tools/out/landing-cases.png") });
 await page.evaluate(() => {
   const w = document.getElementById("cases");
-  window.scrollTo(0, w.offsetTop + (w.offsetHeight - innerHeight) * 0.85);
+  window.scrollTo(0, w.offsetTop + (w.offsetHeight - innerHeight) * 0.93);
 });
 await page.waitForTimeout(900);
 await page.screenshot({ path: join(ROOT, "tools/out/landing-cases2.png") });

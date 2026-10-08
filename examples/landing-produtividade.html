@@ -171,13 +171,30 @@
       .deck-wrap { height: 330vh; view-timeline: --deck block; }
       .deck { position: sticky; top: 0; height: 100svh; display: flex; align-items: center; overflow: clip; padding: 0; }
       .trilho-deck { flex-direction: row; align-items: center; gap: 44px; width: max-content; padding: 0 8vw 0 max(24px, calc((100vw - 1160px) / 2)); will-change: transform; animation: deck-anda linear both; animation-timeline: --deck; animation-range: contain 0% contain 100%; }
-      @keyframes deck-anda { from { transform: translateX(0); } to { transform: translateX(calc(-100% + 100vw)); } }
+      /* a viagem TERMINA aos 84% e segura: o ultimo card fica inteiro em cena
+         por um bom trecho de scroll antes da section despinar */
+      @keyframes deck-anda { 0%, 3% { transform: translateX(0); } 84%, 100% { transform: translateX(calc(-100% + 100vw)); } }
       .card { width: 640px; }
       /* esquematicos se desenham na janela de cada card */
       .card .fio { transition: none; animation: 1s linear both; animation-timeline: --deck; animation-range: contain 0% contain 100%; }
-      .card:nth-of-type(1) .fio { animation-name: d1; } @keyframes d1 { 0%, 6% { stroke-dashoffset: 1; } 30% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 0; } }
-      .card:nth-of-type(2) .fio { animation-name: d2; } @keyframes d2 { 0%, 36% { stroke-dashoffset: 1; } 60% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 0; } }
-      .card:nth-of-type(3) .fio { animation-name: d3; } @keyframes d3 { 0%, 64% { stroke-dashoffset: 1; } 88% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 0; } }
+      .card:nth-of-type(1) .fio { animation-name: d1; } @keyframes d1 { 0%, 6% { stroke-dashoffset: 1; } 28% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 0; } }
+      .card:nth-of-type(2) .fio { animation-name: d2; } @keyframes d2 { 0%, 36% { stroke-dashoffset: 1; } 58% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 0; } }
+      .card:nth-of-type(3) .fio { animation-name: d3; } @keyframes d3 { 0%, 62% { stroke-dashoffset: 1; } 82% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 0; } }
+
+      /* FOCO: o card no centro ganha escala cheia + glow; os demais recuam.
+         Janelas deterministicas sincronizadas com a viagem do trilho. */
+      .card { opacity: .42; transform: scale(.93); transform-origin: center; animation: 1s linear both; animation-timeline: --deck; animation-range: contain 0% contain 100%; }
+      .card::after { content: ""; position: absolute; inset: -2px; border-radius: 18px; pointer-events: none; opacity: 0; box-shadow: 0 0 0 1.5px var(--neon), 0 0 60px rgba(255, 106, 0, .4), 0 0 120px rgba(255, 106, 0, .22); animation: 1s linear both; animation-timeline: --deck; animation-range: contain 0% contain 100%; }
+      .card.invertido::after { box-shadow: 0 0 0 1.5px #ffd9b0, 0 0 70px rgba(255, 138, 42, .55), 0 0 140px rgba(255, 106, 0, .3); }
+      .card:nth-of-type(1) { animation-name: c1; } .card:nth-of-type(1)::after { animation-name: g1; }
+      @keyframes c1 { 0%, 26% { opacity: 1; transform: scale(1); } 36%, 100% { opacity: .42; transform: scale(.93); } }
+      @keyframes g1 { 0%, 26% { opacity: 1; } 36%, 100% { opacity: 0; } }
+      .card:nth-of-type(2) { animation-name: c2; } .card:nth-of-type(2)::after { animation-name: g2; }
+      @keyframes c2 { 0%, 28% { opacity: .42; transform: scale(.93); } 38%, 56% { opacity: 1; transform: scale(1); } 66%, 100% { opacity: .42; transform: scale(.93); } }
+      @keyframes g2 { 0%, 28% { opacity: 0; } 38%, 56% { opacity: 1; } 66%, 100% { opacity: 0; } }
+      .card:nth-of-type(3) { animation-name: c3; } .card:nth-of-type(3)::after { animation-name: g3; }
+      @keyframes c3 { 0%, 58% { opacity: .42; transform: scale(.93); } 70%, 100% { opacity: 1; transform: scale(1); } }
+      @keyframes g3 { 0%, 58% { opacity: 0; } 70%, 100% { opacity: 1; } }
       /* barra de progresso do deck */
       .deck-progress { display: block; position: absolute; left: 50%; bottom: 42px; transform: translateX(-50%); width: 180px; height: 2px; background: var(--linha-dark); }
       .deck-progress i { position: absolute; inset: 0; background: var(--laranja); box-shadow: 0 0 10px var(--glow); transform-origin: left; transform: scaleX(0); animation: deck-prog linear both; animation-timeline: --deck; animation-range: contain 0% contain 100%; }
