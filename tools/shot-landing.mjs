@@ -17,6 +17,12 @@ await page.screenshot({ path: join(ROOT, "tools/out/landing-hero.png") });
 await page.evaluate(() => document.getElementById("cases").scrollIntoView());
 await page.waitForTimeout(900);
 await page.screenshot({ path: join(ROOT, "tools/out/landing-cases.png") });
+await page.evaluate(() => {
+  const w = document.getElementById("maquina");
+  window.scrollTo(0, w.offsetTop + (w.offsetHeight - innerHeight) * 0.55);
+});
+await page.waitForTimeout(900);
+await page.screenshot({ path: join(ROOT, "tools/out/landing-maquina.png") });
 await page.evaluate(() => document.getElementById("abrir-frente").scrollIntoView({ block: "center" }));
 await page.waitForTimeout(900);
 await page.screenshot({ path: join(ROOT, "tools/out/landing-cta.png") });
